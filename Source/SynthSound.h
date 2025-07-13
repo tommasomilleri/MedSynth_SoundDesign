@@ -19,4 +19,3 @@ public:
         return true;
     }    
 };
-//allora come si sta ???
