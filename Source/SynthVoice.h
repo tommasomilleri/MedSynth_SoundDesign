@@ -115,7 +115,6 @@ class SynthVoice : public juce::SynthesiserVoice {
 
   private:
     // core DSP
-    juce::dsp::Oscillator<float> oscillator{[](float x) { return std::sin(x); }};
     juce::dsp::IIR::Filter<float> outputFilter;
 
     juce::dsp::DelayLine<float> ksDelay{2 * 48000};
@@ -143,6 +142,8 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::dsp::IIR::Filter<float> bodyFilter3;
     juce::dsp::IIR::Filter<float> voiceFilter;
     juce::dsp::IIR::Filter<float> lowShelfFilter;
+    juce::dsp::Oscillator<float> oscillator{[](float x) { return std::sin(x); }};
+    juce::dsp::Oscillator<float> oscillator2{[](float x) { return std::sin(x); }}; // square/triangle
 
     InstrumentConfig *config = nullptr;
 

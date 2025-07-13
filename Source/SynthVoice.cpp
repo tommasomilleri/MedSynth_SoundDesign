@@ -7,9 +7,20 @@ bool SynthVoice::canPlaySound (SynthesiserSound* s)
 
 void SynthVoice::prepareToPlay (double newSampleRate, int /*spb*/, int /*nc*/)
 {
-    juce::dsp::ProcessSpec spec{sampleRate, 512, 1};
-
     sampleRate = newSampleRate;
+
+    juce::dsp::ProcessSpec spec{sampleRate, 512, 1};
+    oscillator.initialise([](float x) { return std::sin(x); });
+    oscillator.prepare(spec);
+
+    oscillator2.initialise([this](float x) {
+        // scegli qui la wave da InstrumentConfig:
+        return (config->getOsc2Waveform() == 1   ? std::sin(x)
+                : config->getOsc2Waveform() == 2 ? (x < 0 ? -1.0f : 1.0f)     // square
+                                                 : /*3*/ std::sin(x * 0.5f)); // esempio triangle
+    });
+    oscillator2.prepare(spec);
+
 
 
     // Risonanze della cassa: circa 450 Hz (Q=3) e 1200 Hz (Q=2)
@@ -47,6 +58,7 @@ void SynthVoice::startNote (int midiNoteNumber, float velocity, SynthesiserSound
     int delaySamples = static_cast<int> (sampleRate / freq);
     ksDelay.setDelay (delaySamples);
     ksDelay.reset();
+    
     for (int i = 0; i < delaySamples; ++i) {
         float n = juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f;
         ksDelay.pushSample(0, n);
@@ -93,7 +105,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer,
 
     static float lpState = 0.0f;
     const float feedbackCoef = 0.995f;
-
+    /*
     for (int i = 0; i < numSamples; ++i) {
         // 1) Envelope ampiezza
         float ampVal = ampEnv.getNextSample();
@@ -138,12 +150,55 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer,
         outL[i] = out;
         if (outR) outR[i] = out;
 
-        // 5) Output finale
-        /* float out = mixed * ampVal * config->getMasterGain() * basePressure;
-        outL[i] = out;
-        if (outR) outR[i] = out;*/
-
         // 6) Stop
+        if (!ampEnv.isActive()) {
+            clearCurrentNote();
+            break;
+        }
+    }*/
+    for (int i = 0; i < numSamples; ++i) {
+        // A) ADSR ampiezza
+        float envVal = ampEnv.getNextSample();
+
+        // B) Subtractive body
+        float osc1v = oscillator.processSample(0.0f);
+        float osc2v = oscillator2.processSample(0.0f);
+        float subBody = (osc1v * (1.0f - config->getOsc2Blend()) + osc2v * config->getOsc2Blend()) * envVal * basePressure;
+
+        // C) KS transient/decay
+        float y = ksDelay.popSample(0);
+        float fbCoef = (currentFrequency < 250.0f ? 0.998f : 0.995f);
+        static float lpState = 0.0f;
+        float fb = y * fbCoef;
+        lpState = (fb + lpState) * 0.5f;
+        ksDelay.pushSample(0, lpState);
+        float ksOut = lpState * envVal * basePressure;
+
+        // D) Mix Sub + KS
+        float mixedIn = 0.5f * (subBody + ksOut);
+
+        // E) Body-resonance filters
+        float b1 = bodyFilter1.processSample(mixedIn);
+        float b2 = bodyFilter2.processSample(mixedIn);
+        float b3 = bodyFilter3.processSample(mixedIn);
+        float bodyMix = (currentFrequency < 250.0f ? 0.6f : 0.4f);
+        float mixed = mixedIn * (1.0f - bodyMix) + (b1 + b2 + b3) * (bodyMix / 3.0f);
+
+        // F) Voice-filter + shelving
+        float fEnv = filterEnv.getNextSample();
+        float baseCut = config->getFilterCutoff();
+        float velMod = basePressure * config->getVelocityToCutoffMod();
+        float cutoff = baseCut + fEnv * baseCut + velMod;
+        *voiceFilter.coefficients = *juce::dsp::IIR::Coefficients<float>::makeLowPass(
+            sampleRate, cutoff, config->getFilterResonance());
+        float filtered = voiceFilter.processSample(mixed);
+        float withShelf = lowShelfFilter.processSample(filtered);
+
+        // G) Output
+        outL[i] = outR ? (outR[i] = withShelf * config->getMasterGain(), outL[i])
+                       : withShelf * config->getMasterGain();
+
+        // H) Note finish
         if (!ampEnv.isActive()) {
             clearCurrentNote();
             break;

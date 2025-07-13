@@ -11,9 +11,9 @@ class LuteConfig : public InstrumentConfig {
     float getRelease() const override { return 0.40f; } 
 
     // －－－ Oscillatori －－－ (lasciamo inalterati)
-    int getOsc1Waveform() const override { return 3; }
-    int getOsc2Waveform() const override { return 2; }
-    float getOsc2Blend() const override { return 0.15f; }
+    int getOsc1Waveform() const override { return 1; }
+    int getOsc2Waveform() const override { return 3; }
+    float getOsc2Blend() const override { return 0.3f; }
     float getOsc2Transpose() const override { return 0.5f; }
 
     // －－－ Filtro －－－
