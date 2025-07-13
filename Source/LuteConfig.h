@@ -7,7 +7,7 @@ class LuteConfig : public InstrumentConfig
   public:
     float getAttack() const override
     {
-        return 0.005f;
+        return 0.001f;
     }
     float getDecay() const override
     {
@@ -15,7 +15,7 @@ class LuteConfig : public InstrumentConfig
     }
     float getSustain() const override
     {
-        return 0.1f;
+        return 0.0f;
     }
     float getRelease() const override
     {
