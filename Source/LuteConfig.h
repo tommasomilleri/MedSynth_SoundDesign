@@ -2,70 +2,33 @@
 #pragma once
 #include "InstrumentConfig.h"
 
-class LuteConfig : public InstrumentConfig
-{
+class LuteConfig : public InstrumentConfig {
   public:
-    float getAttack() const override
-    {
-        return 0.001f;
-    }
-    float getDecay() const override
-    {
-        return 0.25f;
-    }
-    float getSustain() const override
-    {
-        return 0.0f;
-    }
-    float getRelease() const override
-    {
-        return 0.3f;
-    }
+    // －－－ ADSR －－－
+    float getAttack() const override { return 0.002f; } // Attack leggermente più lento per non suonare troppo “click”
+    float getDecay() const override { return 0.18f; }   // Decay un po’ più rapido per dare più snap
+    float getSustain() const override { return 0.05f; } // Poco sustain, giusto un filo per corpo
+    float getRelease() const override { return 0.30f; } // Release un po’ più lungo per far sciogliere le armoniche
 
-    int getOsc1Waveform() const override
-    {
-        return 3;
-    } // 3 = Triangle
-    int getOsc2Waveform() const override
-    {
-        return 1;
-    } // 1 = Saw
-    float getOsc2Blend() const override
-    {
-        return 0.2f;
-    }
-    float getOsc2Transpose() const override
-    {
-        return 0.5f;
-    } // un’ottava sotto
+    // －－－ Oscillatori －－－
+    int getOsc1Waveform() const override { return 3; }       // Triangle rimane ok per morbidezza
+    int getOsc2Waveform() const override { return 2; }       // Square al posto di saw per armoniche meno “taglienti”
+    float getOsc2Blend() const override { return 0.15f; }    // Riduci ancora la componente Osc2
+    float getOsc2Transpose() const override { return 0.5f; } // Ottava sotto confermata
 
-    float getFilterCutoff() const override
-    {
-        return 1800.0f;
-    }
-    float getFilterResonance() const override
-    {
-        return 0.7f;
-    }
+    // －－－ Filtro －－－
+    float getFilterCutoff() const override { return 3500.0f; }       // Apri un po’ di più per più brillantezza
+    float getFilterResonance() const override { return 0.35f; }      // Risonanza più morbida
+    float getVelocityToCutoffMod() const override { return 800.0f; } // Più modulazione da velocity sui transienti
 
-    float getPitchBendUp() const override
-    {
-        return 1.0f;
-    }
-    float getPitchBendDown() const override
-    {
-        return 1.0f;
-    }
+    // －－－ Pitch Bend －－－
+    float getPitchBendUp() const override { return 1.0f; }
+    float getPitchBendDown() const override { return 1.0f; }
 
-    float getVelocityToCutoffMod() const override
-    {
-        return 0.0f;
-    }
-    float getMasterGain() const override
-    {
-        return 0.7f;
-    }
+    // －－－ Master －－－
+    float getMasterGain() const override { return 1.1f; } // Alza leggermente il livello globale
 };
+
 /*
 
 LUTE SYNTH CONFIG - SUGGERIMENTI E MIGLIORAMENTI

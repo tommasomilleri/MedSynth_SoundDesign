@@ -73,7 +73,7 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::ADSR filterEnv;
     juce::ADSR::Parameters filterEnvParams;
 
-    // burst di rumore all’attacco
+    // burst di rumore allâ€™attacco
     juce::AudioBuffer<float> noiseBuffer;
     int noisePos = 0;
     juce::dsp::IIR::Filter<float> noiseFilter{juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0, 8000.0f)};
@@ -124,7 +124,7 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::ADSR filterEnv;
     juce::ADSR::Parameters filterEnvParams;
 
-    // burst di rumore all’attacco
+    // burst di rumore allâ€™attacco
     juce::AudioBuffer<float> noiseBuffer;
     int noisePos = 0;
     juce::dsp::IIR::Filter<float> noiseFilter{juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0, 8000.0f)};
@@ -135,6 +135,9 @@ class SynthVoice : public juce::SynthesiserVoice {
     float basePressure = 1.0f;
     bool bowNoiseEnabled = false;
     double currentFrequency = 440.0;
+    juce::dsp::IIR::Filter<float> bodyFilter1, bodyFilter2;
+    // in SynthVoice.h, insieme a bodyFilter1/bodyFilter2
+    juce::dsp::IIR::Filter<float> voiceFilter;
 
     InstrumentConfig *config = nullptr;
     juce::dsp::DelayLine<float> ksDelay{2 * 44100};  
