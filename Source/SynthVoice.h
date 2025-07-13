@@ -118,6 +118,10 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::dsp::Oscillator<float> oscillator{[](float x) { return std::sin(x); }};
     juce::dsp::IIR::Filter<float> outputFilter;
 
+    juce::dsp::DelayLine<float> ksDelay{2 * 48000};
+    int delaySamples = 0;
+
+
     // ADSR per ampiezza e per cutoff
     juce::ADSR ampEnv;
     juce::ADSR::Parameters ampEnvParams;
@@ -136,11 +140,11 @@ class SynthVoice : public juce::SynthesiserVoice {
     bool bowNoiseEnabled = false;
     double currentFrequency = 440.0;
     juce::dsp::IIR::Filter<float> bodyFilter1, bodyFilter2;
-    // in SynthVoice.h, insieme a bodyFilter1/bodyFilter2
+    juce::dsp::IIR::Filter<float> bodyFilter3;
     juce::dsp::IIR::Filter<float> voiceFilter;
+    juce::dsp::IIR::Filter<float> lowShelfFilter;
 
     InstrumentConfig *config = nullptr;
-    juce::dsp::DelayLine<float> ksDelay{2 * 44100};  
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthVoice)
 };

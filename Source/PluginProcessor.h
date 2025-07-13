@@ -82,6 +82,7 @@ class JuceSynthFrameworkAudioProcessor : public juce::AudioProcessor {
     { (size_t) getTotalNumOutputChannels(),
       2,
       juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR };
+    juce::dsp::Convolution luteReverb;
 
     // filtro State-Variable TPT
     juce::dsp::StateVariableTPTFilter<float> stateVariableFilter;

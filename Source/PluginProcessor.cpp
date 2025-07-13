@@ -113,12 +113,19 @@ void JuceSynthFrameworkAudioProcessor::prepareToPlay(double sampleRate,
                                                      int samplesPerBlock) {
     const int numChannels = getTotalNumOutputChannels();
     lastSampleRate = sampleRate;
-
-
     juce::dsp::ProcessSpec spec{
         lastSampleRate,
         static_cast<juce::uint32>(samplesPerBlock),
         static_cast<juce::uint32>(numChannels)};
+    luteReverb.loadImpulseResponse (File("/path/to/lute_ir.wav"),
+                                juce::dsp::Convolution::Stereo::yes,
+                                juce::dsp::Convolution::Trim::yes,
+                                2048);
+luteReverb.prepare(spec);
+
+// in processBlock(), dopo il mix del synth:
+
+    
     stateVariableFilter.reset();
     stateVariableFilter.prepare(spec);
     updateFilter();
@@ -203,6 +210,8 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
     mySynth.renderNextBlock(buffer, midiMessages, 0, numSamples);
 
     dsp::AudioBlock<float> block(buffer);
+    luteReverb.process(juce::dsp::ProcessContextReplacing<float>(block));
+
     dsp::ProcessContextReplacing<float> ctx(block);
 
     stateVariableFilter.process(ctx);

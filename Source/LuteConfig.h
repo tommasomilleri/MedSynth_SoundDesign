@@ -5,28 +5,28 @@
 class LuteConfig : public InstrumentConfig {
   public:
     // －－－ ADSR －－－
-    float getAttack() const override { return 0.002f; } // Attack leggermente più lento per non suonare troppo “click”
-    float getDecay() const override { return 0.18f; }   // Decay un po’ più rapido per dare più snap
-    float getSustain() const override { return 0.05f; } // Poco sustain, giusto un filo per corpo
-    float getRelease() const override { return 0.30f; } // Release un po’ più lungo per far sciogliere le armoniche
+    float getAttack() const override { return 0.003f; } 
+    float getDecay() const override { return 0.3f; }   
+    float getSustain() const override { return 0.08f; } 
+    float getRelease() const override { return 0.40f; } 
 
-    // －－－ Oscillatori －－－
-    int getOsc1Waveform() const override { return 3; }       // Triangle rimane ok per morbidezza
-    int getOsc2Waveform() const override { return 2; }       // Square al posto di saw per armoniche meno “taglienti”
-    float getOsc2Blend() const override { return 0.15f; }    // Riduci ancora la componente Osc2
-    float getOsc2Transpose() const override { return 0.5f; } // Ottava sotto confermata
+    // －－－ Oscillatori －－－ (lasciamo inalterati)
+    int getOsc1Waveform() const override { return 3; }
+    int getOsc2Waveform() const override { return 2; }
+    float getOsc2Blend() const override { return 0.15f; }
+    float getOsc2Transpose() const override { return 0.5f; }
 
     // －－－ Filtro －－－
-    float getFilterCutoff() const override { return 3500.0f; }       // Apri un po’ di più per più brillantezza
-    float getFilterResonance() const override { return 0.35f; }      // Risonanza più morbida
-    float getVelocityToCutoffMod() const override { return 800.0f; } // Più modulazione da velocity sui transienti
+    float getFilterCutoff() const override { return 2500.0f; }
+    float getFilterResonance() const override { return 0.35f; }
+    float getVelocityToCutoffMod() const override { return 800.0f; }
 
     // －－－ Pitch Bend －－－
     float getPitchBendUp() const override { return 1.0f; }
     float getPitchBendDown() const override { return 1.0f; }
 
     // －－－ Master －－－
-    float getMasterGain() const override { return 1.1f; } // Alza leggermente il livello globale
+    float getMasterGain() const override { return 1.1f; }
 };
 
 /*

@@ -67,7 +67,8 @@ addAndMakeVisible(luteImageComp);
     };
     keyboardComponent.setLookAndFeel(&carnivalLookAndFeel);
     keyboardComponent.setKeyWidth(24.0f);        // standard: 24 px per tasto bianco
-    keyboardComponent.setAvailableRange(48, 72); // Do3 → Do5 (2 ottave realistiche)
+    //keyboardComponent.setAvailableRange(48, 72); // Do3 → Do5 (2 ottave realistiche)
+    keyboardComponent.setAvailableRange(0, 127);
     keyboardComponent.setOpaque(false);          // Sfondo trasparente per vedere la cornice
     keyboardComponent.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour::fromRGB(255, 255, 240)); // Avorio caldo
     keyboardComponent.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour::fromRGB(30, 30, 30));    // Ebano scuro
