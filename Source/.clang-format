@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 0
+AllowShortFunctionsOnASingleLine: All
+BreakBeforeBraces: Attach
+UseTab: Never
+SpacesInParentheses: false
+SpaceAfterCStyleCast: false
+CompactNamespaces: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None
+BreakConstructorInitializers: BeforeColon
