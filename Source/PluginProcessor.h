@@ -87,6 +87,13 @@ class JuceSynthFrameworkAudioProcessor : public juce::AudioProcessor {
     // filtro State-Variable TPT
     juce::dsp::StateVariableTPTFilter<float> stateVariableFilter;
 
+
+
+    juce::dsp::ProcessorDuplicator<
+        juce::dsp::IIR::Filter<float>,
+        juce::dsp::IIR::Coefficients<float>>
+        lowShelfFilter;
+
     double lastSampleRate = 44100.0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JuceSynthFrameworkAudioProcessor)

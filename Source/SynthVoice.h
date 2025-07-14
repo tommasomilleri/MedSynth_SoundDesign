@@ -111,13 +111,13 @@ class SynthVoice : public juce::SynthesiserVoice {
                          int startSample, int numSamples) override;
     bool canPlaySound(juce::SynthesiserSound *sound) override;
     void setConfig(InstrumentConfig *newConfig) { config = newConfig; }
-    void enableBowNoise(bool shouldEnable) { bowNoiseEnabled = shouldEnable; }
+    void enablePluckNoise(bool shouldEnable) { pluckNoiseEnabled = shouldEnable; }
 
   private:
     // core DSP
     juce::dsp::IIR::Filter<float> outputFilter;
 
-    juce::dsp::DelayLine<float> ksDelay{2 * 48000};
+    juce::dsp::DelayLine<float> pluckDelay{2 * 48000};
     int delaySamples = 0;
 
 
@@ -129,23 +129,62 @@ class SynthVoice : public juce::SynthesiserVoice {
 
     // burst di rumore all’attacco
     juce::AudioBuffer<float> noiseBuffer;
-    int noisePos = 0;
+    int noisePosition = 0;
     juce::dsp::IIR::Filter<float> noiseFilter{juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0, 8000.0f)};
 
     // note state
-    bool noteOn = false;
-    double sampleRate = 44100.0;
-    float basePressure = 1.0f;
-    bool bowNoiseEnabled = false;
-    double currentFrequency = 440.0;
+    bool noteIsActive = false;
+
+    double currentSampleRate = 44100.0;
+    float velocityLevel = 1.0f;
+    bool pluckNoiseEnabled = false;
+    double noteFrequency = 440.0;
     juce::dsp::IIR::Filter<float> bodyFilter1, bodyFilter2;
     juce::dsp::IIR::Filter<float> bodyFilter3;
+
     juce::dsp::IIR::Filter<float> voiceFilter;
     juce::dsp::IIR::Filter<float> lowShelfFilter;
-    juce::dsp::Oscillator<float> oscillator{[](float x) { return std::sin(x); }};
-    juce::dsp::Oscillator<float> oscillator2{[](float x) { return std::sin(x); }}; // square/triangle
+
+
+    juce::dsp::Oscillator<float> osc1{[](float x) { return std::sin(x); }};
+    juce::dsp::Oscillator<float> osc2{[](float x) { return std::sin(x); }}; // square/triangle
+
+    /* 
+    static constexpr int numPartials = 6;
+    juce::dsp::Oscillator<float> partialOscs[numPartials];
+    float partialAmps[8] = {
+        1.00f, // fondamentale
+        0.80f, // 2ª arma
+        0.70f, // 3ª arma
+        0.60f, // 4ª arma
+        0.50f, // 5ª arma
+        0.40f, // 6ª arma
+        0.30f, // 7ª arma
+        0.20f  // 8ª arma
+    };*/
+    static constexpr int numPartials = 8;
+    juce::dsp::Oscillator<float> partialOscs[numPartials];
+
+    float partialAmps[numPartials] = {
+        1.00f, // f₀
+        0.75f, // 2ª armonica
+        0.65f, // 3ª
+        0.55f, // 4ª
+        0.45f, // 5ª
+        0.35f, // 6ª
+        0.25f, // 7ª
+        0.15f  // 8ª
+    };
+    
+
 
     InstrumentConfig *config = nullptr;
+
+    
+    // (puoi renderli letti da InstrumentConfig)
+
+    juce::ADSR harmonicEnv; // un inviluppo breve per le armoniche
+    juce::ADSR::Parameters harmonicEnvParams;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthVoice)
 };

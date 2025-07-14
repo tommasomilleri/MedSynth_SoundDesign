@@ -117,13 +117,35 @@ void JuceSynthFrameworkAudioProcessor::prepareToPlay(double sampleRate,
         lastSampleRate,
         static_cast<juce::uint32>(samplesPerBlock),
         static_cast<juce::uint32>(numChannels)};
-    luteReverb.loadImpulseResponse (File("/path/to/lute_ir.wav"),
+    /* luteReverb.loadImpulseResponse(File("/path/to/lute_ir.wav"),
                                 juce::dsp::Convolution::Stereo::yes,
                                 juce::dsp::Convolution::Trim::yes,
                                 2048);
-luteReverb.prepare(spec);
+luteReverb.prepare(spec);*/
+    auto exeFile = juce::File::getSpecialLocation(juce::File::currentExecutableFile);
+    auto bundleDir = exeFile.getParentDirectory();
 
-// in processBlock(), dopo il mix del synth:
+    // 2) costruisci il percorso relativo alla cartella “IR/lute_ir.wav”
+    auto irFile = bundleDir
+                      .getChildFile("IR")
+                      .getChildFile("lute_ir.wav");
+
+    // 3) carica solo se esiste, altrimenti fai un DBG e vai avanti
+    if (irFile.existsAsFile()) {
+        luteReverb.loadImpulseResponse(irFile,
+                                       juce::dsp::Convolution::Stereo::yes,
+                                       juce::dsp::Convolution::Trim::yes,
+                                       2048);
+    } else {
+        DBG("❌ IR non trovato: " << irFile.getFullPathName());
+    }
+
+    // 4) prepara comunque la convolution
+    luteReverb.prepare(spec);
+
+    lowShelfFilter.reset();
+lowShelfFilter.prepare(spec);
+
 
     
     stateVariableFilter.reset();
@@ -150,7 +172,7 @@ luteReverb.prepare(spec);
     mySynth.setNoteStealingEnabled(true);
     for (int i = 0; i < 5; ++i) {
         auto *voice = new SynthVoice();
-        voice->enableBowNoise(currentInstrument == InstrumentType::Rebec);
+        voice->enablePluckNoise(currentInstrument == InstrumentType::Rebec);
         voice->setConfig(currentConfig.get());
         voice->prepareToPlay(lastSampleRate, samplesPerBlock, numChannels);
         mySynth.addVoice(voice);
@@ -166,42 +188,6 @@ luteReverb.prepare(spec);
 }
 void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                                     juce::MidiBuffer &midiMessages) {
-    /*
-    DBG(">> processBlock! numSamples=" << buffer.getNumSamples());
-
-    const int numSamples = buffer.getNumSamples();
-    const int numChannels = buffer.getNumChannels();
-
-    buffer.clear();
-    keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
-
-    mySynth.renderNextBlock(buffer, midiMessages, 0, numSamples);
-
-    juce::dsp::AudioBlock<float> block(buffer);
-    auto upBlock = upsampler.processSamplesUp(block);
-
-    juce::dsp::ProcessContextReplacing<float> ctx(block);
-
-    stateVariableFilter.process(juce::dsp::ProcessContextReplacing<float>(upBlock));
-
-    reverbParameters.roomSize = *tree.getRawParameterValue("reverbRoom");
-    reverbParameters.damping = *tree.getRawParameterValue("reverbDamp");
-    reverb.setParameters(reverbParameters);
-    reverb.processStereo(upBlock.getChannelPointer(0), upBlock.getChannelPointer(1), numSamples);
-
-    chorus.setRate(*tree.getRawParameterValue("chorusRate"));
-    chorus.setDepth(*tree.getRawParameterValue("chorusDepth"));
-    chorus.process(juce::dsp::ProcessContextReplacing<float>(upBlock));
-
-    float targetGain = *tree.getRawParameterValue("masterGain");
-    masterGainSmoothed.setTargetValue(targetGain);
-    int smoothSamples = static_cast<int>(*tree.getRawParameterValue("smoothingSamples"));
-    masterGainSmoothed.skip(smoothSamples);
-
-    float gain = masterGainSmoothed.getNextValue();
-    upBlock.multiplyBy(gain);
-
-    downsampler.processSamplesDown(upBlock);*/
     const int numSamples = buffer.getNumSamples();
     const int numChannels = buffer.getNumChannels();
 
@@ -215,6 +201,8 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
     dsp::ProcessContextReplacing<float> ctx(block);
 
     stateVariableFilter.process(ctx);
+    //lowShelfFilter.process(ctx);
+
 
     reverbParameters.roomSize = *tree.getRawParameterValue("reverbRoom");
     reverbParameters.damping = *tree.getRawParameterValue("reverbDamp");
@@ -224,7 +212,7 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
                          numSamples);
 
 
-    chorus.process(ctx);
+   chorus.process(ctx);
 
     float targetGain = *tree.getRawParameterValue("masterGain");
     masterGainSmoothed.setTargetValue(targetGain);
@@ -244,9 +232,21 @@ void JuceSynthFrameworkAudioProcessor::updateFilter()
         stateVariableFilter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
     else
         stateVariableFilter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-
+    /*
     stateVariableFilter.setCutoffFrequency(freq);
-    stateVariableFilter.setResonance(res);
+    stateVariableFilter.setResonance(res);*/
+    // apri sempre il low-pass a 3 kHz, Q=0.5
+stateVariableFilter.setCutoffFrequency (2400.0f);
+stateVariableFilter.setResonance        (0.7f);
+
+// shelving per rinforzare le basse: +6 dB sotto i 200 Hz
+lowShelfFilter.state =
+    *juce::dsp::IIR::Coefficients<float>::makeLowShelf (
+        lastSampleRate,           // o sampleRate
+        200.0f,                   // freq di taglio shelf
+        0.8f,                     // Q shelf
+        juce::Decibels::decibelsToGain (6.0f));
+
 }
 
 
@@ -297,7 +297,7 @@ void JuceSynthFrameworkAudioProcessor::setInstrument(InstrumentType newInstrumen
             voice->setConfig(currentConfig.get());
 
  
-            voice->enableBowNoise(currentInstrument == InstrumentType::Rebec);
+            voice->enablePluckNoise(currentInstrument == InstrumentType::Rebec);
         }
     }
 }
