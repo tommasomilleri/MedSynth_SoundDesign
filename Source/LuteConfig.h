@@ -11,28 +11,28 @@ class LuteConfig : public InstrumentConfig {
     float getSustain() const override { return 0.08f; } 
     float getRelease() const override { return 0.40f; } 
     */
-    float getAttack() const override { return 25.0f; }   // ms
-    float getDecay() const override { return 350.0f; }   // ms
-    float getSustain() const override { return 150.0f; } // ms (level 0→1, ma per simplicity lo manteniamo in ms)
-    float getRelease() const override { return 50.0f; }  // ms
+    float getAttack() const override { return 5.0f; }   // ms
+    float getDecay() const override { return 900.0f; }   // ms
+    float getSustain() const override { return 0.03f; } // ms (level 0→1, ma per simplicity lo manteniamo in ms)
+    float getRelease() const override { return 1200.0f; }  // ms
 
     // －－－ Oscillatori －－－ (lasciamo inalterati)
-    int getOsc1Waveform() const override { return 1; }
-    int getOsc2Waveform() const override { return 3; }
-    float getOsc2Blend() const override { return 0.3f; }
-    float getOsc2Transpose() const override { return 0.5f; }
+    int getOsc1Waveform() const override { return 0; }
+    int getOsc2Waveform() const override { return 2; }
+    float getOsc2Blend() const override { return 0.25f; }
+    float getOsc2Transpose() const override { return 0.0f; }
 
     // －－－ Filtro －－－
-    float getFilterCutoff() const override { return 2500.0f; }
-    float getFilterResonance() const override { return 0.35f; }
-    float getVelocityToCutoffMod() const override { return 800.0f; }
+    float getFilterCutoff() const override { return 6500.0f; }
+    float getFilterResonance() const override { return 0.6f; }
+    float getVelocityToCutoffMod() const override { return 2000.0f; }
 
     // －－－ Pitch Bend －－－
     float getPitchBendUp() const override { return 1.0f; }
     float getPitchBendDown() const override { return 1.0f; }
 
     // －－－ Master －－－
-    float getMasterGain() const override { return 1.1f; }
+    float getMasterGain() const override { return 0.9f; }
 };
 
 /*

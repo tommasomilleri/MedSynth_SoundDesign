@@ -149,6 +149,13 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::dsp::Oscillator<float> osc1{[](float x) { return std::sin(x); }};
     juce::dsp::Oscillator<float> osc2{[](float x) { return std::sin(x); }}; // square/triangle
 
+
+
+    juce::IIRFilter highPassFilter;
+
+
+
+
     /* 
     static constexpr int numPartials = 6;
     juce::dsp::Oscillator<float> partialOscs[numPartials];
@@ -176,6 +183,17 @@ class SynthVoice : public juce::SynthesiserVoice {
         0.15f  // 8ª
     };
     
+    bool noiseBurstActive = false;
+    int noiseBurstSamplesRemaining = 0;
+    int noiseBurstTotalSamples = 0;
+    float noiseBurstGain = 0.03f; 
+
+
+    float lfoPhase = 0.0f;
+    float lfoRate = 3.0f; // 3 Hz
+
+
+
 
 
     InstrumentConfig *config = nullptr;
