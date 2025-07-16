@@ -166,7 +166,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &buffer,
         // A) Envelope
         float envVal = ampEnv.getNextSample();
         //float lfo = std::sin(2.0f * float_Pi * lfoPhase);
-        //float tunedFreq = noteFrequency * (1.0f + 0.0005f * lfo); // ±0.05%
+        //float tunedFreq = noteFrequency * (1.0f + 0.0005f * lfo); // Â±0.05%
         osc1.setFrequency(noteFrequency);
         osc2.setFrequency(float(noteFrequency));
         /*
