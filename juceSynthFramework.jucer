@@ -33,6 +33,9 @@
       <FILE id="VtV8R7" name="InstrumentType.h" compile="0" resource="0"
             file="Source/InstrumentType.h"/>
       <FILE id="kZprQB" name="LuteConfig.h" compile="0" resource="0" file="Source/LuteConfig.h"/>
+      <FILE id="paEJ5x" name="GuitarString.cpp" compile="1" resource="0"
+            file="Source/GuitarString.cpp"/>
+      <FILE id="sLuREp" name="GuitarString.h" compile="0" resource="0" file="Source/GuitarString.h"/>
       <FILE id="bsXLdU" name="RebecConfig.h" compile="0" resource="0" file="Source/RebecConfig.h"/>
       <FILE id="Tn9AzU" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

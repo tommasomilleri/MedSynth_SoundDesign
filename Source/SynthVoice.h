@@ -1,4 +1,3 @@
-
 /*#pragma once
 #include <JuceHeader.h>
 #include "SynthSound.h"
@@ -22,7 +21,7 @@ public:
     void enableBowNoise(bool shouldEnable);
   private:
 
-    
+
     // Filtro di uscita
     juce::dsp::IIR::Filter<float>     outputFilter;
     juce::dsp::Oscillator<float> oscillator{[](float x) { return std::sin(x); }};
@@ -92,9 +91,11 @@ class SynthVoice : public juce::SynthesiserVoice {
 */
 #pragma once
 
+#include "GuitarString.h"
 #include "InstrumentConfig.h"
 #include "SynthSound.h"
 #include <JuceHeader.h>
+#include <vector>
 
 class SynthVoice : public juce::SynthesiserVoice {
   public:
@@ -120,7 +121,6 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::dsp::DelayLine<float> pluckDelay{2 * 48000};
     int delaySamples = 0;
 
-
     // ADSR per ampiezza e per cutoff
     juce::ADSR ampEnv;
     juce::ADSR::Parameters ampEnvParams;
@@ -145,18 +145,12 @@ class SynthVoice : public juce::SynthesiserVoice {
     juce::dsp::IIR::Filter<float> voiceFilter;
     juce::dsp::IIR::Filter<float> lowShelfFilter;
 
-
     juce::dsp::Oscillator<float> osc1{[](float x) { return std::sin(x); }};
     juce::dsp::Oscillator<float> osc2{[](float x) { return std::sin(x); }}; // square/triangle
 
-
-
     juce::IIRFilter highPassFilter;
 
-
-
-
-    /* 
+    /*
     static constexpr int numPartials = 6;
     juce::dsp::Oscillator<float> partialOscs[numPartials];
     float partialAmps[8] = {
@@ -182,27 +176,28 @@ class SynthVoice : public juce::SynthesiserVoice {
         0.25f, // 7ª
         0.15f  // 8ª
     };
-    
+
     bool noiseBurstActive = false;
     int noiseBurstSamplesRemaining = 0;
     int noiseBurstTotalSamples = 0;
-    float noiseBurstGain = 0.03f; 
-
+    float noiseBurstGain = 0.03f;
 
     float lfoPhase = 0.0f;
     float lfoRate = 3.0f; // 3 Hz
 
-
-
-
-
     InstrumentConfig *config = nullptr;
 
-    
     // (puoi renderli letti da InstrumentConfig)
 
     juce::ADSR harmonicEnv; // un inviluppo breve per le armoniche
     juce::ADSR::Parameters harmonicEnvParams;
+
+    std::unique_ptr<GuitarString> guitarString;
+    bool useGuitar = false;
+
+    std::vector<std::unique_ptr<GuitarString>> corde;
+    std::vector<float> detuneAmounts;
+    void setupMedievalGuitar(float freq, double sampleRate);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthVoice)
 };

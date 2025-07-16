@@ -56,6 +56,7 @@ addAndMakeVisible(luteImageComp);
                                  juce::Colours::black);
     instrumentSelector.addItem("Lute", static_cast<int>(InstrumentType::Lute));
     instrumentSelector.addItem("Rebec", static_cast<int>(InstrumentType::Rebec));
+    instrumentSelector.addItem("MedievalGuitar", static_cast<int>(InstrumentType::MedievalGuitar));
 
     instrumentSelector.onChange = [this] {
         auto sel = static_cast<InstrumentType>(instrumentSelector.getSelectedId());
