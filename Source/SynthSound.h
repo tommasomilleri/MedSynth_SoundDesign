@@ -1,10 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
 
-//#include "../JuceLibraryCode/JuceHeader.h"
-
-
-
 class SynthSound : public SynthesiserSound
 {
 

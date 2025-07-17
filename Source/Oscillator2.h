@@ -1,10 +1,7 @@
 
 #pragma once
 
-//#include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-
-//==============================================================================
 
 class Oscillator2    : public Component
 {

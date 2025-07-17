@@ -1,14 +1,11 @@
 #include "Oscillator.h"
 #include <JuceHeader.h>
 
-//==============================================================================
 Oscillator::Oscillator(JuceSynthFrameworkAudioProcessor &p) : processor(p) {
     setSize(200, 200);
 
     oscMenu.addItem("Sine", 1);
     oscMenu.addItem("SawTooth", 2);
-    //  oscMenu.addItem("Square", 3);
-    //  oscMenu.addItem("Triangular", 4);
     oscMenu.setJustificationType(Justification::centred);
     addAndMakeVisible(&oscMenu);
 
@@ -19,13 +16,10 @@ Oscillator::~Oscillator() {
 }
 
 void Oscillator::paint(Graphics &g) {
-    // background stuff
     juce::Rectangle<int> titleArea(0, 10, getWidth(), 20);
-
     g.fillAll(Colours::black);
     g.setColour(Colours::white);
     g.drawText("Oscillator One", titleArea, Justification::centredTop);
-
     juce::Rectangle<float> area(25, 25, 150, 150);
 
     g.setColour(Colours::yellow);

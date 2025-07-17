@@ -1,11 +1,5 @@
-
-
-// Include il file di intestazione della libreria JUCE
 #include <JuceHeader.h>
-// Include il file header di questa classe (Oscillator2.h)
 #include "Oscillator2.h"
-
-//==============================================================================
 Oscillator2::Oscillator2(JuceSynthFrameworkAudioProcessor& p) :
     processor(p)
 {

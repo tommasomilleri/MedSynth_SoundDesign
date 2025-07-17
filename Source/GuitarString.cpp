@@ -10,7 +10,7 @@ GuitarString::GuitarString(double frequency, double sampleRate)
 void GuitarString::pluck() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dist(-0.5f, 0.5f); // ampiezza ridotta
+    std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
     for (auto &sample : buffer)
         sample = dist(gen);
     bufferIndex = 0;
@@ -20,7 +20,7 @@ float GuitarString::process() {
     float currentSample = buffer[bufferIndex];
     int nextIndex = (bufferIndex + 1) % buffer.size();
     float nextSample = buffer[nextIndex];
-    float newSample = 0.9985f * 0.5f * (currentSample + nextSample); // damping più naturale
+    float newSample = 0.9985f * 0.5f * (currentSample + nextSample);
     buffer[bufferIndex] = newSample;
     bufferIndex = nextIndex;
     // Filtro passa basso semplice

@@ -2,7 +2,6 @@
 #include <JuceHeader.h>
 #include "Filter.h"
 
-//==============================================================================
 Filter::Filter(JuceSynthFrameworkAudioProcessor& p) :
 processor(p)
 {

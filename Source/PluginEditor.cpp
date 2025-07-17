@@ -14,8 +14,6 @@ JuceSynthFrameworkAudioProcessorEditor::JuceSynthFrameworkAudioProcessorEditor(J
 
         juce::Image src = juce::ImageCache::getFromMemory(BinaryData::sfondo1_jpg, BinaryData::sfondo1_jpgSize);
         constexpr float scale = 0.5f;
-
-        // 2.3) calcola dimensioni scalate e chiama setSize
         int scaledW = static_cast<int>(std::round(src.getWidth() * scale));
         int scaledH = static_cast<int>(std::round(src.getHeight() * scale));
         setSize(scaledW, scaledH);
@@ -39,7 +37,6 @@ addAndMakeVisible(luteImageComp);
         BinaryData::rebecfrontPhotoroom_png,
         BinaryData::rebecfrontPhotoroom_pngSize);
     addAndMakeVisible(luteImageComp);
-    // usa direttamente la mappa per l’immagine iniziale
     luteImageComp.setImage(imagesMap[processor.getCurrentInstrument()],
                            juce::RectanglePlacement::centred);
     }
@@ -56,7 +53,7 @@ addAndMakeVisible(luteImageComp);
                                  juce::Colours::black);
     instrumentSelector.addItem("Lute", static_cast<int>(InstrumentType::Lute));
     instrumentSelector.addItem("Rebec", static_cast<int>(InstrumentType::Rebec));
-    instrumentSelector.addItem("MedievalGuitar", static_cast<int>(InstrumentType::MedievalGuitar));
+    //instrumentSelector.addItem("MedievalGuitar", static_cast<int>(InstrumentType::MedievalGuitar));
 
     instrumentSelector.onChange = [this] {
         auto sel = static_cast<InstrumentType>(instrumentSelector.getSelectedId());
@@ -67,10 +64,9 @@ addAndMakeVisible(luteImageComp);
         luteImageComp.repaint();
     };
     keyboardComponent.setLookAndFeel(&carnivalLookAndFeel);
-    keyboardComponent.setKeyWidth(24.0f);        // standard: 24 px per tasto bianco
-    //keyboardComponent.setAvailableRange(48, 72); // Do3 → Do5 (2 ottave realistiche)
+    keyboardComponent.setKeyWidth(24.0f);
     keyboardComponent.setAvailableRange(0, 127);
-    keyboardComponent.setOpaque(false);          // Sfondo trasparente per vedere la cornice
+    keyboardComponent.setOpaque(true);          // Sfondo trasparente per vedere la cornice
     keyboardComponent.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour::fromRGB(255, 255, 240)); // Avorio caldo
     keyboardComponent.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour::fromRGB(30, 30, 30));    // Ebano scuro
     addAndMakeVisible(instrumentSelector);
@@ -108,8 +104,8 @@ void JuceSynthFrameworkAudioProcessorEditor::resized() {
 
     auto w = getWidth();
     auto h = getHeight();
-    int comboW = int(w * 0.3f); // larga il 30% della larghezza finestra
-    int comboX = int(w * 0.468f); // spostata di un 10% dal bordo sinistro
+    int comboW = int(w * 0.3f);
+    int comboX = int(w * 0.468f);
     int comboY = int(h * 0.1855f);
 
     // 4) Imposta la comboBox

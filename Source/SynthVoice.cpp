@@ -106,10 +106,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &buffer, int startSamp
         float envVal = ampEnv.getNextSample();
 
         float ks = pluckDelay.popSample(0);
-        // MODIFICA RADICALE: Riduciamo drasticamente il sustain della corda
         float fb = ks * (noteFrequency < 250.0f ? 0.970f : 0.965f);
 
-        // MODIFICA RADICALE: Applichiamo un filtro di smorzamento molto più forte
         float dampedSample = 0.5f * (fb + lpState);
         lpState = dampedSample;
 

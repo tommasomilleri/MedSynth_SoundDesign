@@ -1,16 +1,7 @@
-/*
-  ==============================================================================
 
-    BannerComponent.cpp
-    Created: 27 Apr 2025 2:32:21pm
-    Author:  Utente
-
-  ==============================================================================
-*/
 #include <JuceHeader.h>
 #include "BannerComponent.h"
 
-//==============================================================================
 BannerComponent::BannerComponent()
 {
     // carica l’immagine

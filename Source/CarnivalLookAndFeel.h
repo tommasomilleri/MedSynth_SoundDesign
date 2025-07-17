@@ -1,19 +1,9 @@
-/*
-  ==============================================================================
-
-    CarnivalLookAndFeel.h
-    Created: 24 Apr 2025 6:12:19pm
-    Author:  Utente
-
-  ==============================================================================
-*/
 
 #pragma once
-//#include "../JuceLibraryCode/JuceHeader.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "PluginEditor.h"
 #include "InstrumentType.h"
-#include "CarnivalLookAndFeel.h"  // Includi il file della tua classe LookAndFeel
+#include "CarnivalLookAndFeel.h"
 
 
 class CarnivalLookAndFeel : public juce::LookAndFeel_V4
