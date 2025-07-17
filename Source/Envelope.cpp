@@ -2,7 +2,6 @@
 #include "Envelope.h"
 #include <JuceHeader.h>
 
-//==============================================================================
 Envelope::Envelope(JuceSynthFrameworkAudioProcessor &p) : processor(p)
 {
     setSize(200, 200);
@@ -31,10 +30,6 @@ Envelope::Envelope(JuceSynthFrameworkAudioProcessor &p) : processor(p)
     releaseSlider.setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     addAndMakeVisible(&releaseSlider);
     attackVal = new AudioProcessorValueTreeState::SliderAttachment(processor.getValueTreeState(), "attack", attackSlider);
-    //attackVal = new AudioProcessorValueTreeState::SliderAttachment(processor.tree, "attack", attackSlider);
-    //decayVal = new AudioProcessorValueTreeState::SliderAttachment(processor.tree, "decay", decaySlider);
-    //sustainVal = new AudioProcessorValueTreeState::SliderAttachment(processor.tree, "sustain", sustainSlider);
-    //releaseVal = new AudioProcessorValueTreeState::SliderAttachment(processor.tree, "release", releaseSlider);
     attackVal = new AudioProcessorValueTreeState::SliderAttachment(processor.getValueTreeState(), "attack", attackSlider);
     decayVal = new AudioProcessorValueTreeState::SliderAttachment(processor.getValueTreeState(), "decay", decaySlider);
     sustainVal = new AudioProcessorValueTreeState::SliderAttachment(processor.getValueTreeState(), "sustain", sustainSlider);
