@@ -55,7 +55,7 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     noiseBurstGain = 0.03f;
     noiseBurstActive = true;
 
-    noteFrequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+    noteFrequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 2.0f; // un'ottava sopra
     velocityLevel = velocity;
     noteIsActive = true;
 
@@ -65,7 +65,13 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     for (int i = 0; i < delaySamples; ++i)
         pluckDelay.pushSample(0, juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f);
 
-    ampEnvParams = {0.005f, 0.40f, 0.0f, 0.15f};
+    // --- USA I PARAMETRI DI config ---
+    ampEnvParams = {
+        config->getAttack() / 1000.0f,   // converte ms in secondi
+        config->getDecay() / 1000.0f,
+        config->getSustain(),
+        config->getRelease() / 1000.0f
+    };
     ampEnv.setParameters(ampEnvParams);
     ampEnv.noteOn();
 
@@ -73,6 +79,8 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     filterEnvParams.release = 1.0f;
     filterEnv.setParameters(filterEnvParams);
     filterEnv.noteOn();
+
+    float osc1Freq = noteFrequency * pow(2.0f, osc1Transpose); // osc1Transpose = 1.0 per un'ottava sopra
 }
 
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff) {
@@ -99,7 +107,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &buffer, int startSamp
 
         float ks = pluckDelay.popSample(0);
         // MODIFICA RADICALE: Riduciamo drasticamente il sustain della corda
-        float fb = ks * (noteFrequency < 250.0f ? 0.985f : 0.980f);
+        float fb = ks * (noteFrequency < 250.0f ? 0.970f : 0.965f);
 
         // MODIFICA RADICALE: Applichiamo un filtro di smorzamento molto più forte
         float dampedSample = 0.5f * (fb + lpState);

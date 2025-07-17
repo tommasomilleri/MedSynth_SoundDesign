@@ -36,8 +36,8 @@ JuceSynthFrameworkAudioProcessor::JuceSynthFrameworkAudioProcessor()
             std::make_unique<juce::AudioParameterFloat>("pbdown", "PBdown", juce::NormalisableRange<float>(1.0f, 12.0f), 2.0f),
             std::make_unique<juce::AudioParameterFloat>("reverbRoom", "Reverb Room", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f),
             std::make_unique<juce::AudioParameterFloat>("reverbDamp", "Reverb Damping", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f),
-            std::make_unique<juce::AudioParameterFloat>("chorusRate", "Chorus Rate", juce::NormalisableRange<float>(0.0f, 10.0f), 1.5f),
-            std::make_unique<juce::AudioParameterFloat>("chorusDepth", "Chorus Depth", juce::NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+            std::make_unique<juce::AudioParameterFloat>("chorusRate", "Chorus Rate", juce::NormalisableRange<float>(0.0f, 0.0f), 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("chorusDepth", "Chorus Depth", juce::NormalisableRange<float>(0.0f, 0.0f), 0.0f),
             std::make_unique<juce::AudioParameterFloat>("smoothingSamples", "Smoothing Samples", juce::NormalisableRange<float>(1.0f, 1000.0f), 100.0f),}) {
     setInstrument(InstrumentType::Lute);
 }
@@ -198,11 +198,11 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
     dsp::AudioBlock<float> block(buffer);
     luteReverb.process(juce::dsp::ProcessContextReplacing<float>(block));
 
-    dsp::ProcessContextReplacing<float> ctx(block);
+    // RIMUOVI O COMMENTA TUTTI GLI EFFETTI TRANNE IL RIVERBERO
+    // dsp::ProcessContextReplacing<float> ctx(block);
 
-    stateVariableFilter.process(ctx);
-    //lowShelfFilter.process(ctx);
-
+    // stateVariableFilter.process(ctx);
+    // lowShelfFilter.process(ctx);
 
     reverbParameters.roomSize = *tree.getRawParameterValue("reverbRoom");
     reverbParameters.damping = *tree.getRawParameterValue("reverbDamp");
@@ -211,8 +211,7 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
                          buffer.getWritePointer(1),
                          numSamples);
 
-
-   chorus.process(ctx);
+    // chorus.process(ctx); // COMMENTA O RIMUOVI QUESTA RIGA
 
     float targetGain = *tree.getRawParameterValue("masterGain");
     masterGainSmoothed.setTargetValue(targetGain);

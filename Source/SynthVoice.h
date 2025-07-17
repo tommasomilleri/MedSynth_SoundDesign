@@ -114,6 +114,8 @@ class SynthVoice : public juce::SynthesiserVoice {
     void setConfig(InstrumentConfig *newConfig) { config = newConfig; }
     void enablePluckNoise(bool shouldEnable) { pluckNoiseEnabled = shouldEnable; }
 
+    float osc1Transpose = 0.0f; // 0 =
+
   private:
     // core DSP
     juce::dsp::IIR::Filter<float> outputFilter;
