@@ -1,10 +1,22 @@
+/*! \file SynthVoice.cpp
+ *  \brief Implementazione dei metodi di SynthVoice per la sintesi audio.
+ */
 #include "SynthVoice.h"
 #include "SynthSound.h"
-
+/**
+ *  \brief Verifica se la voce può riprodurre il suono passato.
+ *  \param s Puntatore al SynthesiserSound da controllare.
+ *  \return true se il suono è un SynthSound, false altrimenti.
+ */
 bool SynthVoice::canPlaySound(juce::SynthesiserSound *s) {
     return dynamic_cast<SynthSound *>(s) != nullptr;
 }
-
+/**
+ *  \brief Prepara la voce per la riproduzione impostando sample rate e filtri.
+ *  \param newSampleRate Frequenza di campionamento in Hz.
+ *  \param spb            Numero di campioni per blocco (non utilizzato).
+ *  \param nc             Numero di canali (non utilizzato).
+ */
 void SynthVoice::prepareToPlay(double newSampleRate, int /*spb*/, int /*nc*/) {
     currentSampleRate = newSampleRate;
     highPassFilter.setCoefficients(juce::IIRCoefficients::makeHighPass(newSampleRate, 70.0f));
@@ -48,6 +60,13 @@ void SynthVoice::prepareToPlay(double newSampleRate, int /*spb*/, int /*nc*/) {
     filterEnv.setSampleRate(currentSampleRate);
     harmonicEnv.setSampleRate(currentSampleRate);
 }
+/**
+ *  \brief Inizia la riproduzione di una nota MIDI.
+ *  \param midiNoteNumber Numero della nota MIDI.
+ *  \param velocity       Velocità di attacco [0.0, 1.0].
+ *  \param sound          Puntatore al SynthesiserSound (non utilizzato).
+ *  \param currentPitchWheelPosition Posizione della ruota del pitch (non utilizzata).
+ */
 
 void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *, int) {
     noiseBurstTotalSamples = static_cast<int>(currentSampleRate * 0.005f);
@@ -65,12 +84,11 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     for (int i = 0; i < delaySamples; ++i)
         pluckDelay.pushSample(0, juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f);
 
-    // --- USA I PARAMETRI DI config ---
     ampEnvParams = {
-        config->getAttack() / 1000.0f,   // converte ms in secondi
-        config->getDecay() / 1000.0f,
-        config->getSustain(),
-        config->getRelease() / 1000.0f
+        config->getAttack() / 1000.0f,   /**< Attack in secondi */
+        config->getDecay() / 1000.0f,    /**< Decay in secondi  */
+        config->getSustain(),            /**< Sustain level     */
+        config->getRelease() / 1000.0f   /**< Release in secondi*/
     };
     ampEnv.setParameters(ampEnvParams);
     ampEnv.noteOn();
@@ -80,9 +98,13 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     filterEnv.setParameters(filterEnvParams);
     filterEnv.noteOn();
 
-    float osc1Freq = noteFrequency * pow(2.0f, osc1Transpose); // osc1Transpose = 1.0 per un'ottava sopra
+    float osc1Freq = noteFrequency * pow(2.0f, osc1Transpose);
 }
-
+/**
+ *  \brief Ferma la nota corrente, con o senza tail-off.
+ *  \param velocity               Velocità di rilascio (non utilizzata).
+ *  \param allowTailOff           true per permettere il rilascio, false per interrompere immediatamente.
+ */
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff) {
     if (allowTailOff)
         ampEnv.noteOff();
@@ -91,7 +113,12 @@ void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff) {
         clearCurrentNote();
     }
 }
-
+/**
+ *  \brief Rende il blocco audio successivo scrivendolo nel buffer.
+ *  \param buffer AudioBuffer di destinazione.
+ *  \param startSample Indice del primo campione da scrivere.
+ *  \param numSamples Numero di campioni da processare.
+ */
 void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &buffer, int startSample, int numSamples) {
     if (!noteIsActive) return;
 

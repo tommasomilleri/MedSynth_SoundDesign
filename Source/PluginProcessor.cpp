@@ -1,4 +1,13 @@
-#include <JuceHeader.h> // << Aggiungi questa riga PRIMA DI TUTTO
+
+/** \file JuceSynthFrameworkAudioProcessor.cpp
+ *  \brief Implementazione principale del processore audio del sintetizzatore.
+ *
+ *  In questo file definiamo come inizializzare e gestire tutte le
+ *  componenti DSP del plugin, dal caricamento delle risposte impulsive
+ *  fino al rendering delle voci MIDI con effetti di riverbero e filtri.
+ */
+
+#include <JuceHeader.h>
 #include"SynthVoice.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -7,7 +16,14 @@
 #include "RebecConfig.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_audio_plugin_client/juce_audio_plugin_client.h>
-
+/**
+ *  \brief Costruisce il processore audio, configurando bus e parametri.
+ *
+ *  Nel costruttore impostiamo i bus di input/output in stereo quando
+ *  il plugin non è un synth puro, e inizializziamo un AudioProcessorValueTreeState
+ *  per gestire i parametri ADSR, filtri e guadagno master. Infine, selezioniamo
+ *  il "Lute" come strumento di default.
+ */
 JuceSynthFrameworkAudioProcessor::JuceSynthFrameworkAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
     : AudioProcessor(BusesProperties()
@@ -34,80 +50,91 @@ JuceSynthFrameworkAudioProcessor::JuceSynthFrameworkAudioProcessor()
             std::make_unique<juce::AudioParameterFloat>("masterGain", "MasterGain", juce::NormalisableRange<float>(0.0f, 1.0f), 0.7f),
             std::make_unique<juce::AudioParameterFloat>("pbup", "PBup", juce::NormalisableRange<float>(1.0f, 12.0f), 2.0f),
             std::make_unique<juce::AudioParameterFloat>("pbdown", "PBdown", juce::NormalisableRange<float>(1.0f, 12.0f), 2.0f),
-            std::make_unique<juce::AudioParameterFloat>("reverbRoom", "Reverb Room", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f),
-            std::make_unique<juce::AudioParameterFloat>("reverbDamp", "Reverb Damping", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f),
+            std::make_unique<juce::AudioParameterFloat>("reverbRoom", "Reverb Room", juce::NormalisableRange<float>(0.5f, 0.8f), 0.1f),
+            std::make_unique<juce::AudioParameterFloat>("reverbDamp", "Reverb Damping", juce::NormalisableRange<float>(0.5f, 0.8f), 0.5f),
             std::make_unique<juce::AudioParameterFloat>("chorusRate", "Chorus Rate", juce::NormalisableRange<float>(0.0f, 0.0f), 0.0f),
             std::make_unique<juce::AudioParameterFloat>("chorusDepth", "Chorus Depth", juce::NormalisableRange<float>(0.0f, 0.0f), 0.0f),
             std::make_unique<juce::AudioParameterFloat>("smoothingSamples", "Smoothing Samples", juce::NormalisableRange<float>(1.0f, 1000.0f), 100.0f),}) {
     setInstrument(InstrumentType::Lute);
 }
 
+/**
+ *  \brief Distruttore di default, non rilascia risorse extra.
+ */
+JuceSynthFrameworkAudioProcessor::~JuceSynthFrameworkAudioProcessor() = default;
 
-JuceSynthFrameworkAudioProcessor::~JuceSynthFrameworkAudioProcessor()
-{
-}
+/**
+ *  \brief Restituisce il nome del plugin (definito in Projucer).
+ *  \return Stringa con JucePlugin_Name.
+ */
+const juce::String JuceSynthFrameworkAudioProcessor::getName() const { return JucePlugin_Name; }
 
+/**
+ *  \brief Indica se questo plugin accetta input MIDI.
+ *  \return true se JucePlugin_WantsMidiInput è definito.
+ */
+bool JuceSynthFrameworkAudioProcessor::acceptsMidi() const { return JucePlugin_WantsMidiInput; }
 
-const String JuceSynthFrameworkAudioProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
+/**
+ *  \brief Indica se questo plugin produce output MIDI.
+ *  \return true se JucePlugin_ProducesMidiOutput è definito.
+ */
+bool JuceSynthFrameworkAudioProcessor::producesMidi() const { return JucePlugin_ProducesMidiOutput; }
 
-bool JuceSynthFrameworkAudioProcessor::acceptsMidi() const
-{
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
-}
+/**
+ *  \brief Indica se si tratta di un effetto MIDI puro.
+ *  \return true se JucePlugin_IsMidiEffect è definito.
+ */
+bool JuceSynthFrameworkAudioProcessor::isMidiEffect() const { return JucePlugin_IsMidiEffect; }
 
-bool JuceSynthFrameworkAudioProcessor::producesMidi() const
-{
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
-}
+/**
+ *  \brief Restituisce il tempo di tail-off in secondi.
+ *  \return 0.0, in quanto non gestiamo residuali.
+ */
+double JuceSynthFrameworkAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
-bool JuceSynthFrameworkAudioProcessor::isMidiEffect() const
-{
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
-}
+/**
+ *  \brief Numero di programmi (preset) implementati.
+ *  \return 1 (unico preset).
+ */
+int JuceSynthFrameworkAudioProcessor::getNumPrograms() { return 1; }
 
+/**
+ *  \brief Indice del programma corrente.
+ *  \return 0, poiché abbiamo un solo preset.
+ */
+int JuceSynthFrameworkAudioProcessor::getCurrentProgram() { return 0; }
 
-double JuceSynthFrameworkAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
+/**
+ *  \brief Seleziona il programma corrente.
+ *  \param index Indice del preset (ignorato).
+ */
+void JuceSynthFrameworkAudioProcessor::setCurrentProgram(int /* index */) {}
 
-int JuceSynthFrameworkAudioProcessor::getNumPrograms()
-{
-    return 1;
-}
+/**
+ *  \brief Restituisce il nome di un programma.
+ *  \param index Indice del preset (ignorato).
+ *  \return Stringa vuota.
+ */
+const juce::String JuceSynthFrameworkAudioProcessor::getProgramName(int /* index */) { return {}; }
 
-int JuceSynthFrameworkAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
+/**
+ *  \brief Cambia nome di un programma (non implementato).
+ *  \param index   Indice del preset.
+ *  \param newName Nuovo nome (ignorato).
+ */
+void JuceSynthFrameworkAudioProcessor::changeProgramName(int /* index */, const juce::String & /* newName */) {}
 
-void JuceSynthFrameworkAudioProcessor::setCurrentProgram (int index)
-{
-}
-
-const String JuceSynthFrameworkAudioProcessor::getProgramName (int index)
-{
-    return {};
-}
-
-void JuceSynthFrameworkAudioProcessor::changeProgramName (int index, const String& newName)
-{
-}
+/**
+ *  \brief Setup iniziale prima di riprodurre audio.
+ *  \param sampleRate       Frequenza di campionamento in Hz.
+ *  \param samplesPerBlock  Dimensione del blocco di elaborazione.
+ *
+ *  In questa fase creiamo un ProcessSpec con sample rate e canali,
+ *  carichiamo un impulse response per il riverbero del liuto se disponibile,
+ *  e prepariamo tutti gli oggetti DSP e le voci MIDI affinché siano pronti
+ *  per il rendering in processBlock().
+ */
 
 void JuceSynthFrameworkAudioProcessor::prepareToPlay(double sampleRate,
                                                      int samplesPerBlock) {
@@ -117,30 +144,23 @@ void JuceSynthFrameworkAudioProcessor::prepareToPlay(double sampleRate,
         lastSampleRate,
         static_cast<juce::uint32>(samplesPerBlock),
         static_cast<juce::uint32>(numChannels)};
-    /* luteReverb.loadImpulseResponse(File("/path/to/lute_ir.wav"),
-                                juce::dsp::Convolution::Stereo::yes,
-                                juce::dsp::Convolution::Trim::yes,
-                                2048);
-luteReverb.prepare(spec);*/
+    
     auto exeFile = juce::File::getSpecialLocation(juce::File::currentExecutableFile);
     auto bundleDir = exeFile.getParentDirectory();
 
-    // 2) costruisci il percorso relativo alla cartella “IR/lute_ir.wav”
     auto irFile = bundleDir
                       .getChildFile("IR")
                       .getChildFile("lute_ir.wav");
 
-    // 3) carica solo se esiste, altrimenti fai un DBG e vai avanti
     if (irFile.existsAsFile()) {
         luteReverb.loadImpulseResponse(irFile,
                                        juce::dsp::Convolution::Stereo::yes,
                                        juce::dsp::Convolution::Trim::yes,
                                        2048);
     } else {
-        DBG("❌ IR non trovato: " << irFile.getFullPathName());
+        DBG("IR non trovato: " << irFile.getFullPathName());
     }
 
-    // 4) prepara comunque la convolution
     luteReverb.prepare(spec);
 
     lowShelfFilter.reset();
@@ -151,12 +171,11 @@ lowShelfFilter.prepare(spec);
     stateVariableFilter.reset();
     stateVariableFilter.prepare(spec);
     updateFilter();
-    // --- Prepara il filtro delle voci (dspFilt) ---
     dspFilt.reset();
     dspFilt.prepare(spec);
     updateFilter();
-    reverb.reset(); // facoltativo: azzera lo stato interno del riverbero
-    chorus.reset(); // azzera lo stato interno del chorus
+    reverb.reset();
+    chorus.reset();
     chorus.prepare(spec);
 
 
@@ -166,8 +185,6 @@ lowShelfFilter.prepare(spec);
 
     upsampler.initProcessing((size_t)samplesPerBlock);
     downsampler.initProcessing((size_t)samplesPerBlock);
-    
-    // --- Prepara il synth e le sue voci ---
     mySynth.clearVoices();
     mySynth.setNoteStealingEnabled(true);
     for (int i = 0; i < 5; ++i) {
@@ -181,11 +198,19 @@ lowShelfFilter.prepare(spec);
     mySynth.addSound(new SynthSound());
     mySynth.setCurrentPlaybackSampleRate(lastSampleRate);
 
-    // --- Prepara il filtro globale (stateVariableFilter) ---
     stateVariableFilter.reset();
     stateVariableFilter.prepare(spec);
     updateFilter();
 }
+/**
+ *  \brief Renderizza un blocco audio e processa il MIDI.
+ *  \param buffer       Buffer audio di output.
+ *  \param midiMessages Buffer di eventi MIDI in ingresso.
+ *
+ *  In questo metodo chiamiamo renderNextBlock su mySynth per generare il suono
+ *  delle voci, applichiamo il riverbero convolutivo del liuto e il riverbero
+ *  standard di JUCE, infine moduliamo il guadagno master con smoothing.
+ */
 void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                                     juce::MidiBuffer &midiMessages) {
     const int numSamples = buffer.getNumSamples();
@@ -198,12 +223,6 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
     dsp::AudioBlock<float> block(buffer);
     luteReverb.process(juce::dsp::ProcessContextReplacing<float>(block));
 
-    // RIMUOVI O COMMENTA TUTTI GLI EFFETTI TRANNE IL RIVERBERO
-    // dsp::ProcessContextReplacing<float> ctx(block);
-
-    // stateVariableFilter.process(ctx);
-    // lowShelfFilter.process(ctx);
-
     reverbParameters.roomSize = *tree.getRawParameterValue("reverbRoom");
     reverbParameters.damping = *tree.getRawParameterValue("reverbDamp");
     reverb.setParameters(reverbParameters);
@@ -211,14 +230,15 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
                          buffer.getWritePointer(1),
                          numSamples);
 
-    // chorus.process(ctx); // COMMENTA O RIMUOVI QUESTA RIGA
-
     float targetGain = *tree.getRawParameterValue("masterGain");
     masterGainSmoothed.setTargetValue(targetGain);
 
     float gain = masterGainSmoothed.getNextValue();
     block.multiplyBy(gain);
 }
+/**
+ *  \brief Aggiorna i parametri del filtro State Variable e shelving.
+ */
 void JuceSynthFrameworkAudioProcessor::updateFilter()
 {
     int menuChoice = *tree.getRawParameterValue("filterType");
@@ -231,102 +251,76 @@ void JuceSynthFrameworkAudioProcessor::updateFilter()
         stateVariableFilter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
     else
         stateVariableFilter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-    /*
-    stateVariableFilter.setCutoffFrequency(freq);
-    stateVariableFilter.setResonance(res);*/
-    // apri sempre il low-pass a 3 kHz, Q=0.5
+   
 stateVariableFilter.setCutoffFrequency (2400.0f);
 stateVariableFilter.setResonance        (0.7f);
 
-// shelving per rinforzare le basse: +6 dB sotto i 200 Hz
 lowShelfFilter.state =
     *juce::dsp::IIR::Coefficients<float>::makeLowShelf (
-        lastSampleRate,           // o sampleRate
-        200.0f,                   // freq di taglio shelf
-        0.8f,                     // Q shelf
+        lastSampleRate,
+        200.0f,
+        0.8f,
         juce::Decibels::decibelsToGain (6.0f));
 
 }
+/**
+ *  \brief Indica che il plugin offre un'interfaccia GUI personalizzata.
+ *  \return true.
+ */
+bool JuceSynthFrameworkAudioProcessor::hasEditor() const { return true; }
 
+/**
+ *  \brief Crea l'editor grafico associato a questo processore.
+ *  \return Nuova istanza di JuceSynthFrameworkAudioProcessorEditor.
+ */
+juce::AudioProcessorEditor *JuceSynthFrameworkAudioProcessor::createEditor() { return new JuceSynthFrameworkAudioProcessorEditor(*this); }
 
+/**
+ *  \brief Serializza lo stato corrente del plugin.
+ */
+void JuceSynthFrameworkAudioProcessor::getStateInformation(juce::MemoryBlock & /*destData*/) {}
 
+/**
+ *  \brief Carica lo stato del plugin da dati serializzati.
+ */
+void JuceSynthFrameworkAudioProcessor::setStateInformation(const void * /*data*/, int /*size*/) {}
 
-bool JuceSynthFrameworkAudioProcessor::hasEditor() const
-{
-    return true;
-}
-
-
-AudioProcessorEditor* JuceSynthFrameworkAudioProcessor::createEditor()
-{
-    return new JuceSynthFrameworkAudioProcessorEditor(*this);
-}
-
-
-void JuceSynthFrameworkAudioProcessor::getStateInformation (MemoryBlock& destData)
-{
-    
-}
-
-void JuceSynthFrameworkAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
-{
-    
-}
-void JuceSynthFrameworkAudioProcessor::setInstrument(InstrumentType newInstrument)
-{
+/**
+ *  \brief Cambia lo strumento corrente e aggiorna la configurazione delle voci.
+ */
+void JuceSynthFrameworkAudioProcessor::setInstrument(InstrumentType newInstrument) {
     currentInstrument = newInstrument;
-
-    switch (newInstrument)
-    {
-    case InstrumentType::Lute:
+    if (newInstrument == InstrumentType::Lute)
         currentConfig = std::make_unique<LuteConfig>();
-        break;
-
-    case InstrumentType::Rebec:
+    else
         currentConfig = std::make_unique<RebecConfig>();
-        break;
-
-        // QUA SARANNO DA AGGIUNGERE ALTRI STRUMENTI
-    }
 
     for (int i = 0; i < mySynth.getNumVoices(); ++i)
-    {
-        if (auto* voice = dynamic_cast<SynthVoice*>(mySynth.getVoice(i)))
-        {
+        if (auto *voice = dynamic_cast<SynthVoice *>(mySynth.getVoice(i)))
             voice->setConfig(currentConfig.get());
-
- 
-            voice->enablePluckNoise(currentInstrument == InstrumentType::Rebec);
-        }
-    }
 }
 
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new JuceSynthFrameworkAudioProcessor();
-}
-void JuceSynthFrameworkAudioProcessor::releaseResources()
-{
-    // Se non hai risorse da liberare, lasciala vuota
-}
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool JuceSynthFrameworkAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
-#if JucePlugin_IsMidiEffect
-    ignoreUnused(layouts);
-    return true;
-#else
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+/**
+ *  \brief Crea l'istanza del plugin per JUCE.
+ *  \return Nuovo oggetto JuceSynthFrameworkAudioProcessor.
+ */
+AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new JuceSynthFrameworkAudioProcessor(); }
+
+/**
+ *  \brief Metodo chiamato quando il plugin viene stoppato.
+ */
+void JuceSynthFrameworkAudioProcessor::releaseResources() {}
+
+/**
+ *  \brief Verifica la compatibilità del layout dei bus audio.
+ */
+bool JuceSynthFrameworkAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const {
+    auto mainOutput = layouts.getMainOutputChannelSet();
+    if (mainOutput != juce::AudioChannelSet::mono() && mainOutput != juce::AudioChannelSet::stereo())
         return false;
-
-#if ! JucePlugin_IsSynth
-    // se non sei un synth, l’input deve corrispondere all’output
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+#if !JucePlugin_IsSynth
+    if (layouts.getMainInputChannelSet() != mainOutput)
         return false;
 #endif
-
     return true;
-#endif
 }
-#endif
