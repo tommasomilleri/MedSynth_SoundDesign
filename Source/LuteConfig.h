@@ -4,7 +4,6 @@
 class LuteConfig : public InstrumentConfig {
   public:
     // －－－ ADSR －－－
-    
     float getAttack() const override { return 30.0f; }   
     float getDecay() const override { return 600.0f; }
     float getSustain() const override { return 1.2f; }

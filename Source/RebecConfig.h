@@ -15,7 +15,6 @@ class RebecConfig : public InstrumentConfig {
     float getRelease() const override {
         return 0.5f;
     }
-
     int getOsc1Waveform() const override {
         return 1;
     }

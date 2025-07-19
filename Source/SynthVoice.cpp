@@ -1,21 +1,21 @@
 /*! \file SynthVoice.cpp
- *  \brief Implementazione dei metodi di SynthVoice per la sintesi audio.
+ *  Implementazione dei metodi di SynthVoice per la sintesi audio.
  */
 #include "SynthVoice.h"
 #include "SynthSound.h"
 /**
- *  \brief Verifica se la voce può riprodurre il suono passato.
- *  \param s Puntatore al SynthesiserSound da controllare.
+ *  Verifica se la voce può riprodurre il suono passato.
+ *  s Puntatore al SynthesiserSound da controllare.
  *  \return true se il suono è un SynthSound, false altrimenti.
  */
 bool SynthVoice::canPlaySound(juce::SynthesiserSound *s) {
     return dynamic_cast<SynthSound *>(s) != nullptr;
 }
 /**
- *  \brief Prepara la voce per la riproduzione impostando sample rate e filtri.
- *  \param newSampleRate Frequenza di campionamento in Hz.
- *  \param spb            Numero di campioni per blocco (non utilizzato).
- *  \param nc             Numero di canali (non utilizzato).
+ *  Prepara la voce per la riproduzione impostando sample rate e filtri.
+ *  newSampleRate Frequenza di campionamento in Hz.
+ *  spb            Numero di campioni per blocco (non utilizzato).
+ *  nc             Numero di canali (non utilizzato).
  */
 void SynthVoice::prepareToPlay(double newSampleRate, int /*spb*/, int /*nc*/) {
     currentSampleRate = newSampleRate;
@@ -61,11 +61,11 @@ void SynthVoice::prepareToPlay(double newSampleRate, int /*spb*/, int /*nc*/) {
     harmonicEnv.setSampleRate(currentSampleRate);
 }
 /**
- *  \brief Inizia la riproduzione di una nota MIDI.
- *  \param midiNoteNumber Numero della nota MIDI.
- *  \param velocity       Velocità di attacco [0.0, 1.0].
- *  \param sound          Puntatore al SynthesiserSound (non utilizzato).
- *  \param currentPitchWheelPosition Posizione della ruota del pitch (non utilizzata).
+ *  Inizia la riproduzione di una nota MIDI.
+ *  midiNoteNumber Numero della nota MIDI.
+ *  velocity       Velocità di attacco [0.0, 1.0].
+ *  sound          Puntatore al SynthesiserSound (non utilizzato).
+ *  currentPitchWheelPosition Posizione della ruota del pitch (non utilizzata).
  */
 
 void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *, int) {
@@ -101,9 +101,9 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     float osc1Freq = noteFrequency * pow(2.0f, osc1Transpose);
 }
 /**
- *  \brief Ferma la nota corrente, con o senza tail-off.
- *  \param velocity               Velocità di rilascio (non utilizzata).
- *  \param allowTailOff           true per permettere il rilascio, false per interrompere immediatamente.
+ *  Ferma la nota corrente, con o senza tail-off.
+ *  velocity               Velocità di rilascio (non utilizzata).
+ *  allowTailOff           true per permettere il rilascio, false per interrompere immediatamente.
  */
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff) {
     if (allowTailOff)
@@ -114,10 +114,10 @@ void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff) {
     }
 }
 /**
- *  \brief Rende il blocco audio successivo scrivendolo nel buffer.
- *  \param buffer AudioBuffer di destinazione.
- *  \param startSample Indice del primo campione da scrivere.
- *  \param numSamples Numero di campioni da processare.
+ *  Rende il blocco audio successivo scrivendolo nel buffer.
+ *  buffer AudioBuffer di destinazione.
+ *  startSample Indice del primo campione da scrivere.
+ *  numSamples Numero di campioni da processare.
  */
 void SynthVoice::renderNextBlock(juce::AudioBuffer<float> &buffer, int startSample, int numSamples) {
     if (!noteIsActive) return;

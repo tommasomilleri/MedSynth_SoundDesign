@@ -1,6 +1,6 @@
 
 /** \file JuceSynthFrameworkAudioProcessor.cpp
- *  \brief Implementazione principale del processore audio del sintetizzatore.
+ *  Implementazione principale del processore audio del sintetizzatore.
  *
  *  In questo file definiamo come inizializzare e gestire tutte le
  *  componenti DSP del plugin, dal caricamento delle risposte impulsive
@@ -17,7 +17,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_audio_plugin_client/juce_audio_plugin_client.h>
 /**
- *  \brief Costruisce il processore audio, configurando bus e parametri.
+ *  Costruisce il processore audio, configurando bus e parametri.
  *
  *  Nel costruttore impostiamo i bus di input/output in stereo quando
  *  il plugin non è un synth puro, e inizializziamo un AudioProcessorValueTreeState
@@ -59,76 +59,76 @@ JuceSynthFrameworkAudioProcessor::JuceSynthFrameworkAudioProcessor()
 }
 
 /**
- *  \brief Distruttore di default, non rilascia risorse extra.
+ *  Distruttore di default, non rilascia risorse extra.
  */
 JuceSynthFrameworkAudioProcessor::~JuceSynthFrameworkAudioProcessor() = default;
 
 /**
- *  \brief Restituisce il nome del plugin (definito in Projucer).
+ *  Restituisce il nome del plugin (definito in Projucer).
  *  \return Stringa con JucePlugin_Name.
  */
 const juce::String JuceSynthFrameworkAudioProcessor::getName() const { return JucePlugin_Name; }
 
 /**
- *  \brief Indica se questo plugin accetta input MIDI.
+ *  Indica se questo plugin accetta input MIDI.
  *  \return true se JucePlugin_WantsMidiInput è definito.
  */
 bool JuceSynthFrameworkAudioProcessor::acceptsMidi() const { return JucePlugin_WantsMidiInput; }
 
 /**
- *  \brief Indica se questo plugin produce output MIDI.
+ *  Indica se questo plugin produce output MIDI.
  *  \return true se JucePlugin_ProducesMidiOutput è definito.
  */
 bool JuceSynthFrameworkAudioProcessor::producesMidi() const { return JucePlugin_ProducesMidiOutput; }
 
 /**
- *  \brief Indica se si tratta di un effetto MIDI puro.
+ *  Indica se si tratta di un effetto MIDI puro.
  *  \return true se JucePlugin_IsMidiEffect è definito.
  */
 bool JuceSynthFrameworkAudioProcessor::isMidiEffect() const { return JucePlugin_IsMidiEffect; }
 
 /**
- *  \brief Restituisce il tempo di tail-off in secondi.
+ *  Restituisce il tempo di tail-off in secondi.
  *  \return 0.0, in quanto non gestiamo residuali.
  */
 double JuceSynthFrameworkAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 /**
- *  \brief Numero di programmi (preset) implementati.
+ *  Numero di programmi (preset) implementati.
  *  \return 1 (unico preset).
  */
 int JuceSynthFrameworkAudioProcessor::getNumPrograms() { return 1; }
 
 /**
- *  \brief Indice del programma corrente.
+ *  Indice del programma corrente.
  *  \return 0, poiché abbiamo un solo preset.
  */
 int JuceSynthFrameworkAudioProcessor::getCurrentProgram() { return 0; }
 
 /**
- *  \brief Seleziona il programma corrente.
- *  \param index Indice del preset (ignorato).
+ *  Seleziona il programma corrente.
+ *  index Indice del preset (ignorato).
  */
 void JuceSynthFrameworkAudioProcessor::setCurrentProgram(int /* index */) {}
 
 /**
- *  \brief Restituisce il nome di un programma.
- *  \param index Indice del preset (ignorato).
+ *  Restituisce il nome di un programma.
+ *  index Indice del preset (ignorato).
  *  \return Stringa vuota.
  */
 const juce::String JuceSynthFrameworkAudioProcessor::getProgramName(int /* index */) { return {}; }
 
 /**
- *  \brief Cambia nome di un programma (non implementato).
- *  \param index   Indice del preset.
- *  \param newName Nuovo nome (ignorato).
+ *  Cambia nome di un programma (non implementato).
+ *  index   Indice del preset.
+ *  newName Nuovo nome (ignorato).
  */
 void JuceSynthFrameworkAudioProcessor::changeProgramName(int /* index */, const juce::String & /* newName */) {}
 
 /**
- *  \brief Setup iniziale prima di riprodurre audio.
- *  \param sampleRate       Frequenza di campionamento in Hz.
- *  \param samplesPerBlock  Dimensione del blocco di elaborazione.
+ *  Setup iniziale prima di riprodurre audio.
+ *  sampleRate       Frequenza di campionamento in Hz.
+ *  samplesPerBlock  Dimensione del blocco di elaborazione.
  *
  *  In questa fase creiamo un ProcessSpec con sample rate e canali,
  *  carichiamo un impulse response per il riverbero del liuto se disponibile,
@@ -203,9 +203,9 @@ lowShelfFilter.prepare(spec);
     updateFilter();
 }
 /**
- *  \brief Renderizza un blocco audio e processa il MIDI.
- *  \param buffer       Buffer audio di output.
- *  \param midiMessages Buffer di eventi MIDI in ingresso.
+ *  Renderizza un blocco audio e processa il MIDI.
+ *  buffer       Buffer audio di output.
+ *  midiMessages Buffer di eventi MIDI in ingresso.
  *
  *  In questo metodo chiamiamo renderNextBlock su mySynth per generare il suono
  *  delle voci, applichiamo il riverbero convolutivo del liuto e il riverbero
@@ -237,7 +237,7 @@ void JuceSynthFrameworkAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
     block.multiplyBy(gain);
 }
 /**
- *  \brief Aggiorna i parametri del filtro State Variable e shelving.
+ *  Aggiorna i parametri del filtro State Variable e shelving.
  */
 void JuceSynthFrameworkAudioProcessor::updateFilter()
 {
@@ -264,29 +264,29 @@ lowShelfFilter.state =
 
 }
 /**
- *  \brief Indica che il plugin offre un'interfaccia GUI personalizzata.
+ *  Indica che il plugin offre un'interfaccia GUI personalizzata.
  *  \return true.
  */
 bool JuceSynthFrameworkAudioProcessor::hasEditor() const { return true; }
 
 /**
- *  \brief Crea l'editor grafico associato a questo processore.
+ *  Crea l'editor grafico associato a questo processore.
  *  \return Nuova istanza di JuceSynthFrameworkAudioProcessorEditor.
  */
 juce::AudioProcessorEditor *JuceSynthFrameworkAudioProcessor::createEditor() { return new JuceSynthFrameworkAudioProcessorEditor(*this); }
 
 /**
- *  \brief Serializza lo stato corrente del plugin.
+ *  Serializza lo stato corrente del plugin.
  */
 void JuceSynthFrameworkAudioProcessor::getStateInformation(juce::MemoryBlock & /*destData*/) {}
 
 /**
- *  \brief Carica lo stato del plugin da dati serializzati.
+ *  Carica lo stato del plugin da dati serializzati.
  */
 void JuceSynthFrameworkAudioProcessor::setStateInformation(const void * /*data*/, int /*size*/) {}
 
 /**
- *  \brief Cambia lo strumento corrente e aggiorna la configurazione delle voci.
+ *  Cambia lo strumento corrente e aggiorna la configurazione delle voci.
  */
 void JuceSynthFrameworkAudioProcessor::setInstrument(InstrumentType newInstrument) {
     currentInstrument = newInstrument;
@@ -301,18 +301,18 @@ void JuceSynthFrameworkAudioProcessor::setInstrument(InstrumentType newInstrumen
 }
 
 /**
- *  \brief Crea l'istanza del plugin per JUCE.
+ *  Crea l'istanza del plugin per JUCE.
  *  \return Nuovo oggetto JuceSynthFrameworkAudioProcessor.
  */
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new JuceSynthFrameworkAudioProcessor(); }
 
 /**
- *  \brief Metodo chiamato quando il plugin viene stoppato.
+ *  Metodo chiamato quando il plugin viene stoppato.
  */
 void JuceSynthFrameworkAudioProcessor::releaseResources() {}
 
 /**
- *  \brief Verifica la compatibilità del layout dei bus audio.
+ *  Verifica la compatibilità del layout dei bus audio.
  */
 bool JuceSynthFrameworkAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const {
     auto mainOutput = layouts.getMainOutputChannelSet();

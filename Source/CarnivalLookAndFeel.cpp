@@ -10,11 +10,11 @@ void CarnivalLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,
 {
     
     // Disegna sfondo colore beige
-    g.setColour(juce::Colour::fromRGB(255, 240, 200));  // beige carta pergamena
+    g.setColour(juce::Colour::fromRGB(255, 240, 200));
     g.fillRoundedRectangle(0, 0, width, height, 8.0f);
 
     // Disegna il bordo
-    g.setColour(juce::Colour::fromRGB(160, 100, 50));  // marrone ornamento
+    g.setColour(juce::Colour::fromRGB(160, 100, 50));
     g.drawRoundedRectangle(0, 0, width, height, 8.0f, 2.0f);
 
 }

@@ -53,8 +53,6 @@ addAndMakeVisible(luteImageComp);
                                  juce::Colours::black);
     instrumentSelector.addItem("Lute", static_cast<int>(InstrumentType::Lute));
     instrumentSelector.addItem("Rebec", static_cast<int>(InstrumentType::Rebec));
-    //instrumentSelector.addItem("MedievalGuitar", static_cast<int>(InstrumentType::MedievalGuitar));
-
     instrumentSelector.onChange = [this] {
         auto sel = static_cast<InstrumentType>(instrumentSelector.getSelectedId());
         processor.setInstrument(sel);
@@ -67,14 +65,12 @@ addAndMakeVisible(luteImageComp);
     keyboardComponent.setKeyWidth(24.0f);
     keyboardComponent.setAvailableRange(0, 127);
     keyboardComponent.setOpaque(true);          
-    keyboardComponent.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour::fromRGB(255, 255, 240)); // Avorio caldo
-    keyboardComponent.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour::fromRGB(30, 30, 30));    // Ebano scuro
+    keyboardComponent.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour::fromRGB(255, 255, 240));
+    keyboardComponent.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour::fromRGB(30, 30, 30));
     addAndMakeVisible(instrumentSelector);
-    // font “Cinzel Decorative” 16pt bold, centrato
     
     instrumentSelector.setJustificationType(juce::Justification::centred);
 
-    // colore del testo (id=”textColourId”)
     instrumentSelector.setColour(
         juce::ComboBox::textColourId,
         juce::Colours::black);
@@ -82,7 +78,6 @@ addAndMakeVisible(luteImageComp);
         juce::ComboBox::backgroundColourId,
         juce::Colour::fromRGB(255, 240, 200));
 
-    // (opzionale) colore freccina
     instrumentSelector.setColour(
         juce::ComboBox::arrowColourId,
         juce::Colours::black);

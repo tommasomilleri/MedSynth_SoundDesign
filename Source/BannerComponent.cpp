@@ -8,7 +8,6 @@ BannerComponent::BannerComponent()
     juce::Image src = juce::ImageCache::getFromMemory (BinaryData::sfondo_png,
                                                        BinaryData::sfondo_pngSize);
 
-    // prendi la banda alta (220 px) e ruotala
     const int sliceH = 220;
     juce::Image slice = src.getClippedImage ({ 0, 0, src.getWidth(), sliceH });
 

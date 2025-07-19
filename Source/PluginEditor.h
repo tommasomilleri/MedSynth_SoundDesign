@@ -1,7 +1,6 @@
 
 
 #pragma once
-
 #include <JuceHeader.h> // deve essere per primo
 #include "PluginProcessor.h"
 #include "CarnivalLookAndFeel.h"
@@ -29,7 +28,7 @@ class JuceSynthFrameworkAudioProcessorEditor
     juce::Image background;
     juce::ImageComponent luteImageComp;
 
-    // Mappe per immagini e bounds (caricate nel costruttore)
+    // Mappe per immagini e bounds
     std::map<InstrumentType, juce::Image> imagesMap;
     std::map<InstrumentType, juce::Rectangle<int>> boundsMap;
 
