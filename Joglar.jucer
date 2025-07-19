@@ -14,15 +14,15 @@
               pluginCode="JGLR" pluginAUExportPrefix="JoglarAU" companyEmail="S1120554@studenti.univpm.it"
               companyName="UNIVPM" companyWebsite="https://www.univpm.it">
   <MAINGROUP id="Z0T8fs" name="Joglar">
+    <FILE id="eoUqOe" name="sfondo.png" compile="0" resource="1" file="Source/sfondo.png"/>
+    <FILE id="RDtwQZ" name="sfondo1.jpg" compile="0" resource="1" file="Source/sfondo1.jpg"/>
     <FILE id="QMRKDj" name="LUTE_noBG.png" compile="0" resource="1" file="Source/LUTE_noBG.png"/>
     <FILE id="JI89Tf" name="rebec-front-Photoroom.png" compile="0" resource="1"
           file="Source/rebec-front-Photoroom.png"/>
-    <FILE id="hWrjUz" name="sfondo.png" compile="0" resource="1" file="../sfondo.png"/>
     <FILE id="eJUUyk" name="BannerComponent.cpp" compile="1" resource="0"
           file="Source/BannerComponent.cpp"/>
     <FILE id="Xdtvbc" name="BannerComponent.h" compile="0" resource="0"
           file="Source/BannerComponent.h"/>
-    <FILE id="KmZZ33" name="sfondo1.jpg" compile="0" resource="1" file="../sfondo1.jpg"/>
     <GROUP id="{FDD0FFB0-7ABA-CAD0-AB6D-A607E5623CAE}" name="Source">
       <FILE id="VtV8R7" name="InstrumentType.h" compile="0" resource="0"
             file="Source/InstrumentType.h"/>
