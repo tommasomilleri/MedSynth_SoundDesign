@@ -66,7 +66,7 @@ addAndMakeVisible(luteImageComp);
     keyboardComponent.setLookAndFeel(&carnivalLookAndFeel);
     keyboardComponent.setKeyWidth(24.0f);
     keyboardComponent.setAvailableRange(0, 127);
-    keyboardComponent.setOpaque(true);          // Sfondo trasparente per vedere la cornice
+    keyboardComponent.setOpaque(true);          
     keyboardComponent.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour::fromRGB(255, 255, 240)); // Avorio caldo
     keyboardComponent.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour::fromRGB(30, 30, 30));    // Ebano scuro
     addAndMakeVisible(instrumentSelector);

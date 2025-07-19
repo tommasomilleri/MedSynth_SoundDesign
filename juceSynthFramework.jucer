@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ymDLCP" name="MedSynth" displaySplashScreen="1" reportAppUsage="1"
+<JUCERPROJECT id="ymDLCP" name="Joglar" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" projectType="audioplug" version="1.0.0"
-              bundleIdentifier="com.yourcompany.juceSynthFramework" includeBinaryInAppConfig="1"
-              companyCopyright="" buildVST="0" buildVST3="1" buildAU="1" buildAUv3="0"
-              buildRTAS="0" buildAAX="0" buildStandalone="1" enableIAA="0"
-              pluginName="LIUTO?" pluginDesc="Sintetizzatore di strumenti medievali"
-              pluginManufacturer="Tommaso M" pluginManufacturerCode="Manu"
-              pluginCode="Ymdl" pluginChannelConfigs="" pluginIsSynth="1" pluginWantsMidiIn="1"
-              pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="juceSynthFrameworkAU" aaxIdentifier="com.yourcompany.juceSynthFramework"
-              pluginAAXCategory="2" pluginFormats="buildAU,buildStandalone,buildVST3"
+              includeBinaryInAppConfig="1" companyCopyright="" buildVST="0"
+              buildVST3="1" buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0"
+              buildStandalone="1" enableIAA="0" pluginName="Joglar" pluginDesc="Sintetizzatore di strumenti medievali"
+              pluginManufacturer="Tommaso M" pluginChannelConfigs="" pluginIsSynth="1"
+              pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0"
+              pluginEditorRequiresKeys="0" pluginAAXCategory="2" pluginFormats="buildAU,buildStandalone,buildVST3"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              headerPath="Source/Maximilian/libs&#10;" jucerFormatVersion="1">
-  <MAINGROUP id="Z0T8fs" name="MedSynth">
+              headerPath="Source/Maximilian/libs&#10;" jucerFormatVersion="1"
+              pluginAAXDisableBypass="0" pluginAAXDisableMultiMono="0" pluginManufacturerCode="MILL"
+              pluginCode="JGLR" pluginAUExportPrefix="JoglarAU" companyEmail="S1120554@studenti.univpm.it"
+              companyName="UNIVPM" companyWebsite="https://www.univpm.it">
+  <MAINGROUP id="Z0T8fs" name="Joglar">
     <FILE id="QMRKDj" name="LUTE_noBG.png" compile="0" resource="1" file="Source/LUTE_noBG.png"/>
     <FILE id="JI89Tf" name="rebec-front-Photoroom.png" compile="0" resource="1"
           file="Source/rebec-front-Photoroom.png"/>
