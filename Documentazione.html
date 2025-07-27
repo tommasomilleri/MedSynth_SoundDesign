@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuale Tecnico - Sintetizzatore JUCE</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #1a1a1a;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 2em;
+            margin-top: 40px;
+        }
+        h3 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #ccc;
+        }
+        .file-description {
+            background-color: #e7f3ff;
+            border-left: 5px solid #0056b3;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        /* --- Stili per Syntax Highlighting --- */
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9em;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Tipi di dato e classi (es. void, int, class) */
+        .ch-keyword { color: #ff79c6; }
+        /* Nomi di classi e tipi (es. JuceSynthFrameworkAudioProcessor, juce::AudioBuffer) */
+        .ch-type { color: #8be9fd; font-style: italic; }
+        /* Commenti */
+        .ch-comment { color: #6272a4; }
+        /* Direttive del preprocessore (es. #include, #pragma) */
+        .ch-prep { color: #ff79c6; }
+        /* Stringhe e valori letterali (es. "Hello", 0.1f) */
+        .ch-string { color: #f1fa8c; }
+        .ch-literal { color: #bd93f9; }
+        /* Nomi di funzioni e metodi */
+        .ch-function { color: #50fa7b; }
+        /* Variabili e membri */
+        .ch-variable { color: #f8f8f2; }
+        /* Operatori e punteggiatura */
+        .ch-operator { color: #ff79c6; }
+
+    </style>
+</head>
+<body>
+    <nav class="toc">
+        <h2>Indice</h2>
+        <ul>
+            <li><a href="#pluginprocessor">1 - PluginProcessor.cpp</a></li>
+            <li><a href="#pluginprocessor-h">2 - PluginProcessor.h</a></li>
+            <li><a href="#synthvoice-cpp">3 - SynthVoice.cpp</a></li>
+            <li><a href="#synthvoice-h">4 - SynthVoice.h</a></li>
+            <li><a href="#synthsound-h">5 - SynthSound.h</a></li> 
+            <li><a href="#luteconfig-h">6 - LuteConfig.h</a></li>
+            <li><a href="#plugineditor-cpp">7 - PluginEditor.cpp</a></li>
+            <li><a href="#plugineditor-h">8 - PluginEditor.h</a></li>
+            <li><a href="#bannercomponent-cpp">9 - BannerComponent.cpp</a></li>
+            <li><a href="#bannercomponent-h">10 - BannerComponent.h</a></li>
+            <!-- aggiungi qui tutte le altre voci -->
+        </ul>
+    </nav>
+    
+<section>
+
+    <h1>Manuale Tecnico - Sintetizzatore Fisico</h1>
+    <p>Questa documentazione descrive l'architettura e il funzionamento di un sintetizzatore virtuale sviluppato con il framework JUCE. L'obiettivo del progetto è realizzare un sintetizzatore virtuale dedicato alla riproduzione quanto piú fedele del liuto rinascimentale. Le tecniche di sintesi impiegate comprendono l'algoritmo di Karplus-Strong per simulare le corde vibranti, due distinti oscillatori usati in combinazioni per garantire un segnale audio ricco, convoluzione per riprodurre la risonanza acustica del corpo dello strumento, e una leggera componente di riverbero per aggiungere profondità e spazialità al suono generato. Queste tecniche combinate permettono di ottenere un timbro realistico e dinamico, adatto a contesti di produzione musicale e sound design storicamente informati. L'analisi che segue approfondisce ogni componente, dall'interfaccia utente al motore di sintesi.</p>
+<p>
+    Tutti i controlli sono integrati in un'interfaccia grafica personalizzata e tematizzata, ispirata all'iconografia e all'estetica del periodo storico di riferimento. La GUI consente la selezione dello strumento corrente (la scelta spazia dal liuto alla ribeca) e ne mostra visivamente l'aspetto, migliorando l'esperienza d'uso e facilitando il sound design in contesti musicali storicamente informati.</p>
+
+    </section>
+<section id="1">
+<h2 id="pluginprocessor">1 - PluginProcessor.cpp</h2>
+    <p class="file-description">
+        Questo file, <strong><code>PluginProcessor.cpp</code></strong>, è il cuore operativo del plugin. Contiene l'implementazione concreta di tutta la logica di elaborazione audio e MIDI, la gestione dei parametri e l'orchestrazione degli effetti. Mentre il file header (<code>.h</code>) definisce la struttura, questo file (<code>.cpp</code>) ne costruisce il comportamento effettivo.
+    </p>
+
+    <h3>Costruttore: Definizione dei Parametri</h3>
+    <p>
+        Il costruttore è responsabile dell'inizializzazione del plugin. La sua funzione più importante qui è la creazione e la registrazione di tutti i parametri controllabili dall'utente. Questo viene fatto attraverso la classe <strong><code>juce::AudioProcessorValueTreeState</code></strong> (variabile <code>tree</code>). Questo oggetto è fondamentale perché non solo memorizza lo stato di ogni parametro (attacco, decadimento, cutoff del filtro, ecc.), ma gestisce anche la comunicazione con la DAW per l'automazione e il salvataggio dei preset. Ogni <code>make_unique&lt;juce::AudioParameterFloat&gt;</code> definisce un potenziometro virtuale con un ID interno (es. <code>"attack"</code>), un'etichetta per l'utente, un intervallo di valori e un valore predefinito.
+    </p>
+<pre><code><span class="ch-type">JuceSynthFrameworkAudioProcessor</span><span class="ch-operator">::</span><span class="ch-function">JuceSynthFrameworkAudioProcessor</span>()
+#<span class="ch-prep">ifndef</span> JucePlugin_PreferredChannelConfigurations
+    <span class="ch-operator">:</span> <span class="ch-function">AudioProcessor</span>(BusesProperties()
+<span class="ch-comment">// ...</span>
+                         )
+#<span class="ch-prep">endif</span>
+      ,
+      tree(<span class="ch-operator">*</span><span class="ch-keyword">this</span>, <span class="ch-keyword">nullptr</span>, <span class="ch-string">"PARAMETERS"</span>,
+           {std::make_unique&lt;<span class="ch-type">juce::AudioParameterFloat</span>&gt;(<span class="ch-string">"attack"</span>, <span class="ch-string">"Attack"</span>, <span class="ch-type">juce::NormalisableRange</span>&lt;<span class="ch-keyword">float</span>&gt;(<span class="ch-literal">0.1f</span>, <span class="ch-literal">5000.0f</span>), <span class="ch-literal">0.1f</span>),
+            std::make_unique&lt;<span class="ch-type">juce::AudioParameterFloat</span>&gt;(<span class="ch-string">"decay"</span>, <span class="ch-string">"Decay"</span>, <span class="ch-type">juce::NormalisableRange</span>&lt;<span class="ch-keyword">float</span>&gt;(<span class="ch-literal">1.0f</span>, <span class="ch-literal">2000.0f</span>), <span class="ch-literal">1.0f</span>),
+            std::make_unique&lt;<span class="ch-type">juce::AudioParameterFloat</span>&gt;(<span class="ch-string">"sustain"</span>, <span class="ch-string">"Sustain"</span>, <span class="ch-type">juce::NormalisableRange</span>&lt;<span class="ch-keyword">float</span>&gt;(<span class="ch-literal">0.0f</span>, <span class="ch-literal">1.0f</span>), <span class="ch-literal">0.8f</span>),
+            std::make_unique&lt;<span class="ch-type">juce::AudioParameterFloat</span>&gt;(<span class="ch-string">"release"</span>, <span class="ch-string">"Release"</span>, <span class="ch-type">juce::NormalisableRange</span>&lt;<span class="ch-keyword">float</span>&gt;(<span class="ch-literal">0.1f</span>, <span class="ch-literal">5000.0f</span>), <span class="ch-literal">0.1f</span>),
+            <span class="ch-comment">// ... altri parametri per filtri, oscillatori e guadagno ...</span>
+            }) {
+    <span class="ch-function">setInstrument</span>(InstrumentType<span class="ch-operator">::</span>Lute);
+}
+</code></pre>
+
+    <h3><code>prepareToPlay()</code>: Preparazione alla Sintesi</h3>
+    <p>
+        Questo metodo viene chiamato dalla DAW prima che la riproduzione audio inizi. È un passo cruciale per allocare memoria, inizializzare oggetti DSP e preparare tutto il necessario per l'elaborazione in tempo reale. Le operazioni chiave sono:
+    </p>
+    <ol>
+        <li><strong>Creazione delle Voci Polifoniche</strong>: Il sintetizzatore viene reso polifonico creando un numero di istanze di <code>SynthVoice</code> (in questo caso, 5). Ogni "voce" è in grado di suonare una nota indipendentemente. Queste vengono aggiunte all'oggetto <code>mySynth</code>, che gestirà l'assegnazione delle note MIDI in arrivo alle voci libere.</li>
+        <li><strong>Inizializzazione DSP</strong>: Tutti gli altri effetti e filtri vengono preparati con le specifiche audio correnti (frequenza di campionamento, dimensione del blocco) tramite l'oggetto <code>juce::dsp::ProcessSpec</code>.</li>
+    </ol>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">JuceSynthFrameworkAudioProcessor</span><span class="ch-operator">::</span><span class="ch-function">prepareToPlay</span>(<span class="ch-keyword">double</span> sampleRate, <span class="ch-keyword">int</span> samplesPerBlock) {
+    <span class="ch-type">juce::dsp::ProcessSpec</span> spec{ sampleRate, <span class="ch-keyword">static_cast</span>&lt;juce::uint32&gt;(samplesPerBlock), <span class="ch-comment">/*...*/</span> };
+    
+    <span class="ch-comment">// Carica la IR per il riverbero a convoluzione</span>
+    <span class="ch-type">auto</span> irFile = juce::File::getSpecialLocation(<span class="ch-comment">/*...*/</span>).getChildFile(<span class="ch-string">"IR"</span>).getChildFile(<span class="ch-string">"lute_ir.wav"</span>);
+    <span class="ch-keyword">if</span> (irFile.<span class="ch-function">existsAsFile</span>()) {
+        luteReverb.<span class="ch-function">loadImpulseResponse</span>(irFile, <span class="ch-comment">/* ... */</span>);
+    }
+    luteReverb.<span class="ch-function">prepare</span>(spec);
+
+    <span class="ch-comment">// Crea e prepara le voci del sintetizzatore per la polifonia</span>
+    mySynth.<span class="ch-function">clearVoices</span>();
+    <span class="ch-keyword">for</span> (<span class="ch-keyword">int</span> i <span class="ch-operator">=</span> <span class="ch-literal">0</span>; i <span class="ch-operator">&lt;</span> <span class="ch-literal">5</span>; <span class="ch-operator">++</span>i) {
+        <span class="ch-type">auto</span><span class="ch-operator">*</span> voice <span class="ch-operator">=</span> <span class="ch-keyword">new</span> <span class="ch-type">SynthVoice</span>();
+        voice<span class="ch-operator">-></span><span class="ch-function">setConfig</span>(currentConfig.<span class="ch-function">get</span>());
+        voice<span class="ch-operator">-></span><span class="ch-function">prepareToPlay</span>(sampleRate, samplesPerBlock, getTotalNumOutputChannels());
+        mySynth.<span class="ch-function">addVoice</span>(voice);
+    }
+    mySynth.<span class="ch-function">addSound</span>(<span class="ch-keyword">new</span> <span class="ch-type">SynthSound</span>());
+}
+</code></pre>
+    
+    <h3><code>processBlock()</code>: Il Ciclo di Elaborazione Audio</h3>
+    <p>
+        Questo è il metodo più importante, chiamato ripetutamente dalla DAW per processare piccoli blocchi di audio. La catena del segnale è la seguente:
+    </p>
+    <ol>
+        <li><strong>Sintesi</strong>: <code>mySynth.renderNextBlock()</code> è la prima fase. Itera su tutte le voci attive e chiede loro di generare il loro output audio (il suono "secco" del modello fisico) e di sommarlo nel buffer principale. Gestisce anche l'interpretazione dei messaggi MIDI per avviare o fermare le voci.</li>
+        <li><strong>Effetti</strong>: Il buffer, che ora contiene l'audio sintetizzato, viene passato attraverso una catena di effetti. Prima il <strong>riverbero a convoluzione</strong> (<code>luteReverb</code>) per applicare le risonanze specifiche dello strumento, poi un <strong>riverbero algoritmico</strong> più generico (<code>reverb</code>) per aggiungere spazialità.</li>
+        <li><strong>Guadagno Finale</strong>: Il volume generale viene applicato tramite <code>masterGainSmoothed</code>. L'uso di un valore "lisciato" (smoothed) è essenziale per evitare artefatti sonori (click o pop) quando il guadagno viene modificato rapidamente dall'utente.</li>
+    </ol>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">JuceSynthFrameworkAudioProcessor</span><span class="ch-operator">::</span><span class="ch-function">processBlock</span>(<span class="ch-type">juce::AudioBuffer</span>&lt;<span class="ch-keyword">float</span>&gt; <span class="ch-operator">&amp;</span>buffer, <span class="ch-type">juce::MidiBuffer</span> <span class="ch-operator">&amp;</span>midiMessages) {
+    buffer.<span class="ch-function">clear</span>();
+    <span class="ch-comment">// 1. Sintetizza l'audio e processa il MIDI</span>
+    mySynth.<span class="ch-function">renderNextBlock</span>(buffer, midiMessages, <span class="ch-literal">0</span>, buffer.<span class="ch-function">getNumSamples</span>());
+
+    <span class="ch-comment">// 2. Applica la catena di effetti</span>
+    <span class="ch-type">dsp::AudioBlock</span>&lt;<span class="ch-keyword">float</span>&gt; block(buffer);
+    luteReverb.<span class="ch-function">process</span>(<span class="ch-type">juce::dsp::ProcessContextReplacing</span>&lt;<span class="ch-keyword">float</span>&gt;(block));
+    
+    reverb.<span class="ch-function">processStereo</span>(buffer.<span class="ch-function">getWritePointer</span>(<span class="ch-literal">0</span>), buffer.<span class="ch-function">getWritePointer</span>(<span class="ch-literal">1</span>), buffer.<span class="ch-function">getNumSamples</span>());
+
+    <span class="ch-comment">// 3. Applica il guadagno master con smoothing</span>
+    <span class="ch-keyword">float</span> targetGain <span class="ch-operator">=</span> <span class="ch-operator">*</span>tree.<span class="ch-function">getRawParameterValue</span>(<span class="ch-string">"masterGain"</span>);
+    masterGainSmoothed.<span class="ch-function">setTargetValue</span>(targetGain);
+    <span class="ch-keyword">float</span> gain <span class="ch-operator">=</span> masterGainSmoothed.<span class="ch-function">getNextValue</span>();
+    block.<span class="ch-function">multiplyBy</span>(gain);
+}
+</code></pre>
+
+    </section>
+<section id="2">
+<h2 id="pluginprocessor-h">2 - PluginProcessor.h</h2>
+<p class="file-description">
+    Questo file definisce la classe <strong><code>JuceSynthFrameworkAudioProcessor</code></strong>, fulcro della logica audio del plugin. Qui si stabilisce l'architettura fondamentale per la gestione del flusso MIDI-audio, dei parametri e della catena DSP.
+</p>
+<pre><code><span class="ch-prep">#pragma once</span>
+<span class="ch-prep">#include "InstrumentConfig.h"</span>
+<span class="ch-prep">#include &lt;JuceHeader.h&gt;</span>
+
+<span class="ch-keyword">class</span> <span class="ch-type">JuceSynthFrameworkAudioProcessor</span> <span class="ch-operator">:</span> <span class="ch-keyword">public</span> <span class="ch-type">juce::AudioProcessor</span> {
+  <span class="ch-keyword">public</span>:
+    <span class="ch-function">JuceSynthFrameworkAudioProcessor</span>();
+    <span class="ch-operator">~</span><span class="ch-function">JuceSynthFrameworkAudioProcessor</span>() <span class="ch-keyword">override</span>;
+
+    <span class="ch-keyword">void</span> <span class="ch-function">prepareToPlay</span>(<span class="ch-keyword">double</span> sampleRate, <span class="ch-keyword">int</span> samplesPerBlock) <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">processBlock</span>(<span class="ch-type">juce::AudioBuffer</span>&lt;<span class="ch-keyword">float</span>&gt; <span class="ch-operator">&amp;</span>, <span class="ch-type">juce::MidiBuffer</span> <span class="ch-operator">&amp;</span>) <span class="ch-keyword">override</span>;
+
+    <span class="ch-type">juce::AudioProcessorValueTreeState</span><span class="ch-operator">&amp;</span> <span class="ch-function">getValueTreeState</span>() <span class="ch-keyword">noexcept</span> { <span class="ch-keyword">return</span> tree; }
+    <span class="ch-keyword">void</span> <span class="ch-function">setInstrument</span>(<span class="ch-type">InstrumentType</span> newInstrument);
+
+  <span class="ch-keyword">private</span>:
+    <span class="ch-comment">// Contenitore per le voci di sintesi</span>
+    <span class="ch-type">juce::Synthesiser</span> mySynth;
+
+    <span class="ch-comment">// Configurazione dinamica dello strumento</span>
+    std::unique_ptr&lt;<span class="ch-type">InstrumentConfig</span>&gt; currentConfig;
+    <span class="ch-type">InstrumentType</span> currentInstrument <span class="ch-operator">=</span> <span class="ch-type">InstrumentType</span><span class="ch-operator">::</span>Lute;
+
+    <span class="ch-comment">// Albero dei parametri per UI e automazione</span>
+    <span class="ch-type">juce::AudioProcessorValueTreeState</span> tree;
+
+    <span class="ch-comment">// Catena di effetti DSP</span>
+    <span class="ch-type">juce::Reverb</span> reverb;
+    <span class="ch-type">juce::dsp::Chorus</span>&lt;<span class="ch-keyword">float</span>&gt; chorus;
+    <span class="ch-type">juce::dsp::Convolution</span> luteReverb;
+    
+    <span class="ch-type">JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR</span> (<span class="ch-type">JuceSynthFrameworkAudioProcessor</span>)
+};
+</code></pre>
+<p>
+    La classe eredita da <code>juce::AudioProcessor</code>, definendo i metodi di preparazione al playback e di elaborazione dei blocchi audio. All'interno, un oggetto <code>juce::Synthesiser</code> orchestra le voci di sintesi che generano il segnale raw, mentre <code>AudioProcessorValueTreeState</code> funge da modello centrale per tutti i parametri, implementando un'architettura MVC che separa la logica audio dalla GUI. L'uso del puntatore smart <code>std::unique_ptr&lt;InstrumentConfig&gt;</code> applica il Strategy Pattern, permettendo di cambiare dinamicamente il comportamento timbrico tra liuto, ribeca o altri strumenti, senza alterare il codice della voce. Infine, la catena DSP include con volumi diversi un riverbero, un chorus e una convoluzione basata su HRTF o IR di corpo, organizzati in un flusso modulare che garantisce una gestione efficiente delle risorse in tempo reale.
+</p>
+
+    </section>
+<section id="3">
+<h2 id="synthvoice-cpp">3 - SynthVoice.cpp</h2>
+    <p class="file-description">
+        Questo file implementa la logica della classe <strong><code>SynthVoice</code></strong>. È qui che la teoria della sintesi sonora diventa codice operativo. La classe simula il comportamento di uno strumento a corda utilizzando una combinazione di algoritmi di sintesi a modelli fisici e sintesi sottrattiva.
+    </p>
+
+    <h3><code>startNote()</code>: Il "Pizzico" della Corda Virtuale</h3>
+    <p>
+        Questo metodo viene eseguito quando una nota deve iniziare a suonare. Il suo compito è preparare la voce per la sintesi, simulando l'azione iniziale che genera il suono (es. un pizzico).
+    </p>
+    <ol>
+        <li><strong>Modello di Karplus-Strong</strong>: Il cuore della simulazione. La lunghezza della linea di ritardo (<code>pluckDelay</code>) viene calcolata in base alla frequenza della nota. Una linea di ritardo più corta produce una nota più acuta. La linea di ritardo viene quindi riempita con rumore bianco. Questo "impulso" iniziale di rumore contiene un'ampia gamma di frequenze, simile all'attacco percussivo e ricco di armoniche di una corda reale che viene pizzicata.</li>
+        <li><strong>Inizializzazione degli Inviluppi</strong>: I parametri per gli inviluppi ADSR (ampiezza e filtro) vengono recuperati dall'oggetto di configurazione (<code>config</code>) e applicati. Gli inviluppi vengono quindi attivati con <code>noteOn()</code>, pronti a modellare il suono nel tempo.</li>
+    </ol>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">SynthVoice</span><span class="ch-operator">::</span><span class="ch-function">startNote</span>(<span class="ch-keyword">int</span> midiNoteNumber, <span class="ch-keyword">float</span> velocity, <span class="ch-type">juce::SynthesiserSound</span><span class="ch-operator">*</span>, <span class="ch-keyword">int</span>) {
+    <span class="ch-comment">// L'attacco viene simulato con un breve burst di rumore</span>
+    noiseBurstActive <span class="ch-operator">=</span> <span class="ch-keyword">true</span>;
+    noiseBurstSamplesRemaining <span class="ch-operator">=</span> <span class="ch-keyword">static_cast</span>&lt;<span class="ch-keyword">int</span>&gt;(currentSampleRate <span class="ch-operator">*</span> <span class="ch-literal">0.005f</span>);
+
+    <span class="ch-comment">// La frequenza viene trasposta di un'ottava per un suono più brillante</span>
+    noteFrequency <span class="ch-operator">=</span> <span class="ch-type">juce::MidiMessage</span><span class="ch-operator">::</span><span class="ch-function">getMidiNoteInHertz</span>(midiNoteNumber) <span class="ch-operator">*</span> <span class="ch-literal">2.0f</span>;
+    
+    <span class="ch-comment">// Inizializzazione della linea di ritardo di Karplus-Strong</span>
+    delaySamples <span class="ch-operator">=</span> <span class="ch-keyword">int</span>(currentSampleRate <span class="ch-operator">/</span> noteFrequency);
+    pluckDelay.<span class="ch-function">setDelay</span>(delaySamples);
+    pluckDelay.<span class="ch-function">reset</span>();
+    <span class="ch-comment">// Riempie la linea di ritardo con rumore bianco per "pizzicare" la corda</span>
+    <span class="ch-keyword">for</span> (<span class="ch-keyword">int</span> i <span class="ch-operator">=</span> <span class="ch-literal">0</span>; i <span class="ch-operator">&lt;</span> delaySamples; <span class="ch-operator">++</span>i)
+        pluckDelay.<span class="ch-function">pushSample</span>(<span class="ch-literal">0</span>, <span class="ch-type">juce::Random</span><span class="ch-operator">::</span><span class="ch-function">getSystemRandom</span>().<span class="ch-function">nextFloat</span>() <span class="ch-operator">*</span> <span class="ch-literal">2.0f</span> <span class="ch-operator">-</span> <span class="ch-literal">1.0f</span>);
+
+    <span class="ch-comment">// Imposta e avvia gli inviluppi ADSR usando i parametri da 'config'</span>
+    ampEnvParams <span class="ch-operator">=</span> { config<span class="ch-operator">-></span><span class="ch-function">getAttack</span>() <span class="ch-operator">/</span> <span class="ch-literal">1000.0f</span>, config<span class="ch-operator">-></span><span class="ch-function">getDecay</span>() <span class="ch-operator">/</span> <span class="ch-literal">1000.0f</span>, <span class="ch-comment">/*...*/</span> };
+    ampEnv.<span class="ch-function">setParameters</span>(ampEnvParams);
+    ampEnv.<span class="ch-function">noteOn</span>();
+    <span class="ch-comment">// ... lo stesso per filterEnv ...</span>
+}
+</code></pre>
+
+    <h3><code>renderNextBlock()</code>: La Generazione del Suono</h3>
+    <p>
+        Questo metodo è il motore di sintesi vero e proprio, chiamato per ogni campione audio. La catena di elaborazione simula diversi fenomeni acustici:
+    </p>
+    <ol>
+        <li><strong>Vibrazione della Corda (Karplus-Strong)</strong>: Il segnale circola nella linea di ritardo (<code>pluckDelay</code>). Ad ogni ciclo, un semplice filtro passa-basso (<code>dampedSample</code>) viene applicato. Questo smorzamento simula la perdita di energia della corda, dove le frequenze alte decadono più velocemente di quelle basse, rendendo il suono progressivamente più morbido.</li>
+        <li><strong>Risonanza del Corpo</strong>: L'output della "corda" viene passato attraverso tre filtri passa-banda fissi (<code>bodyFilter1-3</code>). Questi filtri agiscono come risonatori, amplificando specifiche frequenze. Questo simula come la vibrazione della corda viene colorata dal corpo in legno dello strumento, creando le sue "formanti" caratteristiche e definendone il timbro.</li>
+        <li><strong>Filtraggio Dinamico</strong>: Il segnale risultante viene processato da un filtro passa-basso principale (<code>voiceFilter</code>). La frequenza di taglio di questo filtro non è statica, ma viene modulata dinamicamente dall'inviluppo <code>filterEnv</code> e dalla velocity della nota, permettendo di creare suoni che evolvono in brillantezza nel tempo.</li>
+    </ol>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">SynthVoice</span><span class="ch-operator">::</span><span class="ch-function">renderNextBlock</span>(<span class="ch-type">juce::AudioBuffer</span>&lt;<span class="ch-keyword">float</span>&gt; <span class="ch-operator">&amp;</span>buffer, <span class="ch-keyword">int</span> startSample, <span class="ch-keyword">int</span> numSamples) {
+    <span class="ch-keyword">if</span> (<span class="ch-operator">!</span>noteIsActive) <span class="ch-keyword">return</span>;
+    <span class="ch-keyword">for</span> (<span class="ch-keyword">int</span> i <span class="ch-operator">=</span> <span class="ch-literal">0</span>; i <span class="ch-operator">&lt;</span> numSamples; <span class="ch-operator">++</span>i) {
+        <span class="ch-comment">// 1. Simula la vibrazione e lo smorzamento della corda</span>
+        <span class="ch-keyword">float</span> ks <span class="ch-operator">=</span> pluckDelay.<span class="ch-function">popSample</span>(<span class="ch-literal">0</span>);
+        <span class="ch-keyword">float</span> fb <span class="ch-operator">=</span> ks <span class="ch-operator">*</span> (noteFrequency <span class="ch-operator">&lt;</span> <span class="ch-literal">250.0f</span> <span class="ch-operator">?</span> <span class="ch-literal">0.970f</span> <span class="ch-operator">:</span> <span class="ch-literal">0.965f</span>); <span class="ch-comment">// Smorzamento</span>
+        <span class="ch-keyword">float</span> dampedSample <span class="ch-operator">=</span> <span class="ch-literal">0.5f</span> <span class="ch-operator">*</span> (fb <span class="ch-operator">+</span> lpState); <span class="ch-comment">// Filtro passa-basso semplice</span>
+        lpState <span class="ch-operator">=</span> dampedSample;
+        pluckDelay.<span class="ch-function">pushSample</span>(<span class="ch-literal">0</span>, lpState);
+
+        <span class="ch-keyword">float</span> ksOut <span class="ch-operator">=</span> lpState <span class="ch-operator">*</span> ampEnv.<span class="ch-function">getNextSample</span>() <span class="ch-operator">*</span> velocityLevel;
+        
+        <span class="ch-comment">// 2. Simula la risonanza del corpo dello strumento</span>
+        <span class="ch-keyword">float</span> b1 <span class="ch-operator">=</span> bodyFilter1.<span class="ch-function">processSample</span>(ksOut);
+        <span class="ch-keyword">float</span> b2 <span class="ch-operator">=</span> bodyFilter2.<span class="ch-function">processSample</span>(ksOut);
+        <span class="ch-keyword">float</span> b3 <span class="ch-operator">=</span> bodyFilter3.<span class="ch-function">processSample</span>(ksOut);
+        <span class="ch-keyword">float</span> mixed <span class="ch-operator">=</span> <span class="ch-comment">/* ... mix tra segnale diretto e risonanze del corpo ... */</span>;
+
+        <span class="ch-comment">// 3. Applica il filtro dinamico principale</span>
+        <span class="ch-keyword">float</span> fEnv <span class="ch-operator">=</span> filterEnv.<span class="ch-function">getNextSample</span>();
+        <span class="ch-keyword">float</span> baseCut <span class="ch-operator">=</span> config<span class="ch-operator">-></span><span class="ch-function">getFilterCutoff</span>();
+        <span class="ch-keyword">float</span> cutoff <span class="ch-operator">=</span> baseCut <span class="ch-operator">+</span> fEnv <span class="ch-operator">*</span> baseCut <span class="ch-operator">+</span> velocityLevel <span class="ch-operator">*</span> config<span class="ch-operator">-></span><span class="ch-function">getVelocityToCutoffMod</span>();
+        <span class="ch-operator">*</span>voiceFilter.coefficients <span class="ch-operator">=</span> <span class="ch-operator">*</span><span class="ch-type">juce::dsp::IIR::Coefficients</span>&lt;<span class="ch-keyword">float</span>&gt;<span class="ch-operator">::</span><span class="ch-function">makeLowPass</span>(currentSampleRate, cutoff, config<span class="ch-operator">-></span><span class="ch-function">getFilterResonance</span>());
+        <span class="ch-keyword">float</span> vf <span class="ch-operator">=</span> voiceFilter.<span class="ch-function">processSample</span>(mixed);
+        
+        <span class="ch-comment">// ... Output finale al buffer ...</span>
+    }
+}
+</code></pre>
+    
+    </section>
+<section id="4">
+<h2 id="synthvoice-h">4 - SynthVoice.h</h2>
+    <p class="file-description">
+        Questo file header dichiara la classe <strong><code>SynthVoice</code></strong>. Essa rappresenta una singola unità di produzione sonora, capace di generare il suono per una nota alla volta. L'architettura del sintetizzatore prevede la creazione di più istanze di questa classe per ottenere la polifonia. L'header definisce l'interfaccia e i componenti DSP che ogni voce utilizzerà.
+    </p>
+
+<h3>Componenti di Sintesi Dichiarati</h3>
+    <p>
+        I membri privati della classe sono i mattoni fondamentali del motore di sintesi:
+    </p>
+    <ul>
+        <li><strong><code>juce::dsp::DelayLine&lt;float&gt; pluckDelay</code></strong>: Il componente centrale per l'algoritmo di Karplus-Strong. È una linea di ritardo di lunghezza variabile che funge da risonatore principale, simulando la corda vibrante.</li>
+        <li><strong><code>juce::ADSR ampEnv, filterEnv</code></strong>: Due inviluppi ADSR. Il primo (<code>ampEnv</code>) controlla l'evoluzione del volume del suono nel tempo. Il secondo (<code>filterEnv</code>) modula un parametro del filtro (solitamente il cutoff), permettendo al timbro di cambiare dinamicamente.</li>
+        <li><strong>Filtri del Corpo (<code>bodyFilter1</code>, etc.)</strong>: Una serie di filtri IIR fissi, tipicamente passabanda, che simulano le formanti acustiche del corpo risonante dello strumento. Sono essenziali per dare un carattere timbrico realistico al suono.</li>
+        <li><strong><code>InstrumentConfig* config</code></strong>: Un puntatore grezzo a un oggetto di configurazione. Questo è un elemento chiave del design: la voce è "agnostica" rispetto allo strumento che sta suonando. Riceve tutti i suoi parametri (tempi dell'inviluppo, impostazioni dei filtri, ecc.) dall'oggetto a cui questo puntatore si riferisce. Questo permette di cambiare strumento senza modificare la logica della voce.</li>
+    </ul>
+
+<pre><code><span class="ch-prep">#pragma once</span>
+<span class="ch-prep">#include "InstrumentConfig.h"</span>
+<span class="ch-prep">#include &lt;JuceHeader.h&gt;</span>
+
+<span class="ch-keyword">class</span> <span class="ch-type">SynthVoice</span> <span class="ch-operator">:</span> <span class="ch-keyword">public</span> <span class="ch-type">juce::SynthesiserVoice</span> {
+  <span class="ch-keyword">public</span>:
+    <span class="ch-comment">// Metodi pubblici per controllare il ciclo di vita della voce</span>
+    <span class="ch-keyword">void</span> <span class="ch-function">startNote</span>(<span class="ch-keyword">int</span> midiNoteNumber, <span class="ch-keyword">float</span> velocity, <span class="ch-type">juce::SynthesiserSound</span><span class="ch-operator">*</span>, <span class="ch-keyword">int</span>) <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">stopNote</span>(<span class="ch-keyword">float</span> velocity, <span class="ch-keyword">bool</span> allowTailOff) <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">renderNextBlock</span>(<span class="ch-type">juce::AudioBuffer</span>&lt;<span class="ch-keyword">float</span>&gt; <span class="ch-operator">&amp;</span>, <span class="ch-keyword">int</span>, <span class="ch-keyword">int</span>) <span class="ch-keyword">override</span>;
+    
+    <span class="ch-keyword">bool</span> <span class="ch-function">canPlaySound</span>(<span class="ch-type">juce::SynthesiserSound</span><span class="ch-operator">*</span> sound) <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">setConfig</span>(<span class="ch-type">InstrumentConfig</span><span class="ch-operator">*</span> newConfig) { config <span class="ch-operator">=</span> newConfig; }
+
+  <span class="ch-keyword">private</span>:
+    <span class="ch-comment">// Componente base per Karplus-Strong (la corda)</span>
+    <span class="ch-type">juce::dsp::DelayLine</span>&lt;<span class="ch-keyword">float</span>&gt; pluckDelay{<span class="ch-literal">2</span> <span class="ch-operator">*</span> <span class="ch-literal">48000</span>};
+    
+    <span class="ch-comment">// Modulatori per ampiezza e timbro</span>
+    <span class="ch-type">juce::ADSR</span> ampEnv;
+    <span class="ch-type">juce::ADSR</span> filterEnv;
+
+    <span class="ch-comment">// Filtri per la simulazione delle risonanze del corpo</span>
+    <span class="ch-type">juce::dsp::IIR::Filter</span>&lt;<span class="ch-keyword">float</span>&gt; bodyFilter1, bodyFilter2, bodyFilter3;
+
+    <span class="ch-comment">// Puntatore alla configurazione corrente dello strumento (Strategy Pattern)</span>
+    <span class="ch-type">InstrumentConfig</span><span class="ch-operator">*</span> config <span class="ch-operator">=</span> <span class="ch-keyword">nullptr</span>;
+
+    <span class="ch-type">JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR</span>(<span class="ch-type">SynthVoice</span>)
+};
+</code></pre>
+    
+    </section>
+<section id="5">
+<h2 id="synthsound-h">5 - SynthSound.h</h2>
+    <p class="file-description">
+        Questo file definisce la classe <strong><code>SynthSound</code></strong>. Nel framework di sintesi di JUCE, le classi <code>SynthesiserSound</code> e <code>SynthesiserVoice</code> lavorano in coppia. La classe <code>SynthSound</code> agisce come un "identificatore" o un "tag" per un tipo di suono. La classe <code>SynthVoice</code>, attraverso il suo metodo <code>canPlaySound()</code>, dichiara quali tipi di "tag" è in grado di riprodurre.
+    </p>
+    <p>
+        In questa implementazione, la classe è estremamente semplice. I suoi metodi <code>appliesToNote()</code> e <code>appliesToChannel()</code> restituiscono sempre <code>true</code>. Questo la rende una classe "jolly", indicando che qualsiasi istanza di <code>SynthVoice</code> nel nostro sintetizzatore è autorizzata a suonare questo tipo di suono, indipendentemente dalla nota o dal canale MIDI. È un approccio comune per sintetizzatori che non hanno bisogno di distinguere tra diversi set di campioni o tipi di sintesi complessi.
+    </p>
+<pre><code><span class="ch-prep">#pragma once</span>
+<span class="ch-prep">#include &lt;JuceHeader.h&gt;</span>
+
+<span class="ch-comment">/**
+ * Rappresenta un "tipo" di suono generico che le nostre voci possono suonare.
+ * Agisce come un identificatore per il metodo canPlaySound() di SynthVoice.
+ */</span>
+<span class="ch-keyword">class</span> <span class="ch-type">SynthSound</span> <span class="ch-operator">:</span> <span class="ch-keyword">public</span> <span class="ch-type">SynthesiserSound</span>
+{
+<span class="ch-keyword">public</span>:
+    <span class="ch-comment">// Questa voce può suonare qualsiasi nota? Sì.</span>
+    <span class="ch-keyword">bool</span> <span class="ch-function">appliesToNote</span> (<span class="ch-keyword">int</span> midiNoteNumber) <span class="ch-keyword">override</span>
+    {
+        <span class="ch-keyword">return</span> <span class="ch-keyword">true</span>;
+    }
+    
+    <span class="ch-comment">// Questa voce può rispondere a qualsiasi canale MIDI? Sì.</span>
+    <span class="ch-keyword">bool</span> <span class="ch-function">appliesToChannel</span> (<span class="ch-keyword">int</span> midiChannel) <span class="ch-keyword">override</span>
+    {
+        <span class="ch-keyword">return</span> <span class="ch-keyword">true</span>;
+    }    
+};
+</code></pre>
+    
+    </section>
+<section id="6">
+<h2 id="luteconfig-h">6 - LuteConfig.h</h2>
+    <p class="file-description">
+        Questo file definisce la classe <strong><code>LuteConfig</code></strong>. Questa classe è un esempio eccellente del <strong>Strategy Design Pattern</strong>. La classe base astratta <code>InstrumentConfig</code> (non mostrata ma deducibile) definisce un'interfaccia (una "strategia") per ottenere i parametri di uno strumento. <code>LuteConfig</code> è una "strategia concreta" che fornisce un set specifico di parametri per il suono del liuto.
+    </p>
+    <p>
+        Invece di avere una lunga serie di `if/else` nel codice di <code>SynthVoice</code> per decidere quali parametri usare, la voce semplicemente utilizza l'oggetto di configurazione che le viene passato. Per cambiare il suono da "liuto" a "ribeca", basta passare un'istanza di <code>RebecConfig</code> invece di <code>LuteConfig</code>. Questo rende il codice molto più pulito, flessibile e facile da estendere: per aggiungere un nuovo strumento, basta creare una nuova classe di configurazione. Ogni funzione qui sovrascrive (<code>override</code>) un metodo virtuale della classe base, restituendo un valore fisso che caratterizza il suono del liuto.
+    </p>
+<pre><code><span class="ch-prep">#pragma once</span>
+<span class="ch-prep">#include "InstrumentConfig.h"</span>
+
+<span class="ch-comment">/**
+ * Implementazione concreta della strategia "InstrumentConfig" per il Liuto.
+ * Fornisce valori testati specifici che definiscono il timbro dello strumento in questione.
+ */</span>
+<span class="ch-keyword">class</span> <span class="ch-type">LuteConfig</span> <span class="ch-operator">:</span> <span class="ch-keyword">public</span> <span class="ch-type">InstrumentConfig</span> {
+  <span class="ch-keyword">public</span>:
+    <span class="ch-comment">// --- Parametri dell'inviluppo ADSR in millisecondi/livello ---</span>
+    <span class="ch-keyword">float</span> <span class="ch-function">getAttack</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">30.0f</span>; }   
+    <span class="ch-keyword">float</span> <span class="ch-function">getDecay</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">600.0f</span>; }
+    <span class="ch-keyword">float</span> <span class="ch-function">getSustain</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">1.2f</span>; }
+    <span class="ch-keyword">float</span> <span class="ch-function">getRelease</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">180.0f</span>; }
+    
+    <span class="ch-comment">// --- Parametri degli Oscillatori ---</span>
+    <span class="ch-keyword">int</span> <span class="ch-function">getOsc1Waveform</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">3</span>; } <span class="ch-comment">// sinusoide con forma d'onda pura e morbida</span>
+    
+    <span class="ch-keyword">int</span> <span class="ch-function">getOsc2Waveform</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">2</span>; }<span class="ch-comment">// oscillatore a dente di sega con spettro armonico ricco</span>
+    
+    <span class="ch-comment">// --- Parametri del Filtro ---</span>
+    <span class="ch-keyword">float</span> <span class="ch-function">getFilterCutoff</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">900.0f</span>; }
+    <span class="ch-keyword">float</span> <span class="ch-function">getFilterResonance</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">0.10f</span>; }
+    <span class="ch-keyword">float</span> <span class="ch-function">getVelocityToCutoffMod</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">80.0f</span>; }
+    
+    <span class="ch-comment">// --- Guadagno Master ---</span>
+    <span class="ch-keyword">float</span> <span class="ch-function">getMasterGain</span>() <span class="ch-keyword">const</span> <span class="ch-keyword">override</span> { <span class="ch-keyword">return</span> <span class="ch-literal">3.0f</span>; }
+};
+</code></pre>
+<p>
+    I parametri chiave di <code>LuteConfig</code> sono stati selezionati empiricamente per modellare fedelmente le proprietà acustiche del liuto rinascimentale:
+</p>
+<ul>
+  <li>
+    <strong><code>float getAttack()</code></strong>: simula il pizzico netto ma non istantaneo della corda.
+  </li>
+  <li>
+    <strong><code>float getDecay()</code></strong>: riproduce la rapida diminuzione delle armoniche acute subito dopo l'attacco.
+  </li>
+  <li>
+    <strong><code>float getSustain()</code></strong>: mantiene un livello di corpo sufficiente nel timbro, compensando le perdite naturali.
+  </li>
+  <li>
+    <strong><code>float getRelease()</code></strong>: assicura un rilascio morbido, evitando tagli bruschi nel suono.
+  </li>
+  <li>
+    <strong><code>int getOsc1Waveform()</code> &amp; <code>int getOsc2Waveform()</code></strong>: combinazione di due forme d'onda per arricchire lo spettro armonico.
+  </li>
+  <li>
+    <strong><code>float getFilterCutoff()</code> &amp; <code>float getFilterResonance()</code></strong>: attenuano le frequenze più alte, valorizzando il calore del legno.
+  </li>
+  <li>
+    <strong><code>float getVelocityToCutoffMod()</code></strong>: collega l'apertura del filtro all'intensità del tocco, aumentando l'espressività dinamica.
+  </li>
+  <li>
+    <strong><code>float getMasterGain()</code></strong>: definisce il livello d'uscita ottimale per evitare clipping mantenendo un buon headroom.
+  </li>
+</ul>
+</section>
+<section id="7">
+<h2 id="plugineditor-cpp">7 - PluginEditor.cpp</h2>
+<p class="file-description">
+    Questo file implementa la GUI del plugin tramite la classe <strong><code>JuceSynthFrameworkAudioProcessorEditor</code></strong>. Contiene inclusioni, costruttore, callback di selezione dello strumento, metodi <code>paint()</code> e <code>resized()</code>.
+</p>
+
+
+<h3>Costruttore &amp; inizializzazione componenti</h3>
+<pre><code><span class="ch-type">JuceSynthFrameworkAudioProcessorEditor</span><span class="ch-operator">::</span><span class="ch-function">JuceSynthFrameworkAudioProcessorEditor</span>(<span class="ch-type">JuceSynthFrameworkAudioProcessor</span>& p)
+    : <span class="ch-type">AudioProcessorEditor</span>(&p),
+      processor(p),
+      keyboardComponent(p.keyboardState, <span class="ch-type">juce::MidiKeyboardComponent</span>::horizontalKeyboard)
+{
+    <span class="ch-comment">// Carica l'immagine di sfondo</span>
+    auto src = juce::ImageCache::getFromMemory(BinaryData::sfondo1_jpg, BinaryData::sfondo1_jpgSize);
+    background = juce::Image(src.getFormat(), src.getWidth(), src.getHeight(), true);
+
+    <span class="ch-comment">// Aggiunge selector e tastiera con look personalizzato</span>
+    instrumentSelector.setLookAndFeel(&carnivalLookAndFeel);
+    keyboardComponent.setLookAndFeel(&carnivalLookAndFeel);
+    addAndMakeVisible(instrumentSelector);
+    addAndMakeVisible(keyboardComponent);
+
+    <span class="ch-comment">// Callback per cambiare strumento e immagine</span>
+    instrumentSelector.onChange = [this] {
+        auto sel = static_cast<InstrumentType>(instrumentSelector.getSelectedId());
+        processor.setInstrument(sel);
+        luteImageComp.setImage(imagesMap[sel], juce::RectanglePlacement::centred);
+    };
+}</code></pre>
+<p>
+    Il costruttore carica lo sfondo, posiziona i componenti GUI e imposta il listener per la ComboBox.
+</p>
+
+<h3>paint()</h3>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">JuceSynthFrameworkAudioProcessorEditor</span><span class="ch-operator">::</span><span class="ch-function">paint</span>(<span class="ch-type">juce::Graphics</span>& g)
+{
+    g.drawImageAt(background, 0, 0);
+    <span class="ch-comment">// ... disegno cornici e decorazioni ...</span>
+}
+</code></pre>
+<p>
+    Ridisegna lo sfondo e gli elementi statici (cornici, pergamene) ad ogni refresh.
+</p>
+
+<h3>resized()</h3>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">JuceSynthFrameworkAudioProcessorEditor</span><span class="ch-operator">::</span><span class="ch-function">resized</span>()
+{
+    auto area = getLocalBounds();
+    instrumentSelector.setBounds(area.removeFromTop(30));
+    keyboardComponent.setBounds(area.removeFromBottom(100));
+    luteImageComp.setBounds(area);
+}
+</code></pre>
+<p>
+    Definisce il layout dinamico: posiziona selector, tastiera e visualizzazione del liuto.
+</p>
+
+</section>
+<section id="8">
+<h2 id="plugineditor-h">8 - PluginEditor.h</h2>
+<p class="file-description">
+    Questo header dichiara la classe <strong><code>JuceSynthFrameworkAudioProcessorEditor</code></strong>, derivata da <code>juce::AudioProcessorEditor</code> e <code>juce::ComboBox::Listener</code>, con membri per i componenti GUI e helper per il layout.
+</p>
+
+
+<h3>Dichiarazione della classe</h3>
+<pre><code><span class="ch-keyword">class</span> <span class="ch-type">JuceSynthFrameworkAudioProcessorEditor</span>
+    : public <span class="ch-type">juce::AudioProcessorEditor</span>,
+      private <span class="ch-type">juce::ComboBox::Listener</span>
+{
+public:
+    <span class="ch-function">JuceSynthFrameworkAudioProcessorEditor</span>(<span class="ch-type">JuceSynthFrameworkAudioProcessor</span>&);
+    <span class="ch-operator">~</span><span class="ch-function">JuceSynthFrameworkAudioProcessorEditor</span>() <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">paint</span>(<span class="ch-type">juce::Graphics</span>&) <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">resized</span>() <span class="ch-keyword">override</span>;
+    <span class="ch-keyword">void</span> <span class="ch-function">comboBoxChanged</span>(<span class="ch-type">juce::ComboBox</span>*) <span class="ch-keyword">override</span>;
+};</code></pre>
+<p>
+    Definisce costruttore, distruttore, metodi di rendering e listener per la ComboBox.
+</p>
+
+<h3>Membri GUI</h3>
+<pre><code><span class="ch-keyword">private</span>:
+    <span class="ch-type">JuceSynthFrameworkAudioProcessor</span>&      processor;
+    <span class="ch-type">juce::ComboBox</span>                        instrumentSelector;
+    <span class="ch-type">juce::MidiKeyboardComponent</span>           keyboardComponent;
+    <span class="ch-type">juce::Image</span>                           background;
+    <span class="ch-type">juce::ImageComponent</span>                  luteImageComp;
+    <span class="ch-type">std::map&lt;InstrumentType, juce::Image&gt;</span>       imagesMap;
+    <span class="ch-type">std::map&lt;InstrumentType, juce::Rectangle&lt;int&gt;&gt;</span> boundsMap;
+</code></pre>
+<p>
+    Elenca i componenti grafici e le strutture dati per gestire le immagini e le loro posizioni.
+</p>
+
+</section>
+<section id="9">
+<h2 id = "bannercomponent-cpp">9 - BannerComponent.cpp</h2>
+<p class="file-description">
+    Implementa il componente <strong><code>BannerComponent</code></strong>, responsabile del banner tematico nella GUI. Carica un'immagine di sfondo, ne estrae una porzione, la ruota e la disegna ridimensionata.
+</p>
+
+<h3>Costruttore &amp; preparazione immagine</h3>
+<pre><code><span class="ch-prep">#include &lt;JuceHeader.h&gt;</span>
+<span class="ch-prep">#include "BannerComponent.h"</span>
+
+<span class="ch-type">BannerComponent</span><span class="ch-operator">::</span><span class="ch-function">BannerComponent</span>()
+{
+    <span class="ch-comment">// Carica l'immagine di sfondo dal BinaryData</span>
+    juce::Image src = juce::ImageCache::getFromMemory(BinaryData::sfondo_png, BinaryData::sfondo_pngSize);
+
+    <span class="ch-comment">// Estrae una slice alta 220 px dalla parte superiore</span>
+    const int sliceH = 220;
+    juce::Image slice = src.getClippedImage({ 0, 0, src.getWidth(), sliceH });
+
+    <span class="ch-comment">// Crea un'immagine ruotata di 90° anticlockwise</span>
+    rotated = juce::Image(slice.getFormat(), sliceH, src.getWidth(), true);
+    juce::Graphics g(rotated);
+    g.drawImageTransformed(slice,
+        juce::AffineTransform::rotation(-juce::MathConstants<float>::halfPi)
+                             .translated(0, static_cast<float>(src.getWidth())));
+}
+</code></pre>
+<p>
+    Il costruttore:
+    <ul>
+      <li>Carica l'immagine binaria con <code>ImageCache::getFromMemory</code>.</li>
+      <li>Ritaglia una porzione alta 220 px per mantenere l'aspetto decorativo.</li>
+      <li>Crea un'immagine <code>rotated</code> con dimensioni invertite e disegna la slice ruotata di 90°.</li>
+    </ul>
+<p>
+
+<h3>paint()</h3>
+<pre><code><span class="ch-keyword">void</span> <span class="ch-type">BannerComponent</span><span class="ch-operator">::</span><span class="ch-function">paint</span>(<span class="ch-type">juce::Graphics</span>& g)
+{
+    g.drawImageWithin(rotated,
+                      0, 0, getWidth(), getHeight(),
+                      juce::RectanglePlacement::stretchToFit);
+}
+</code></pre>
+<p>
+    Nel metodo <code>paint()</code>, l'immagine precedentemente ruotata viene disegnata su tutto lo spazio del componente, scalata per adattarsi mantenendo le proporzioni.
+</p>
+
+</section>
+<section id="10">
+<h2 id = "bannercomponent-h">10 - BannerComponent.h</h2>
+<p class="file-description">
+    Header di <strong><code>BannerComponent</code></strong>, derivato da <code>juce::Component</code>, incaricato di dichiarare le funzionalità per caricare, trasformare e renderizzare il banner tematico.
+</p>
+
+<h3>Dichiarazione della classe</h3>
+<pre><code><span class="ch-keyword">class</span> <span class="ch-type">BannerComponent</span> : <span class="ch-keyword">public</span> <span class="ch-type">juce::Component</span>
+{
+public:
+    <span class="ch-function">BannerComponent</span>();                                            <span class="ch-comment">// Carica e prepara l'immagine</span>
+    <span class="ch-keyword">void</span> <span class="ch-function">paint</span>(<span class="ch-type">juce::Graphics</span>&) <span class="ch-keyword">override</span>;  <span class="ch-comment">// Disegna <code>rotated</code></span>
+
+private:
+    <span class="ch-type">juce::Image</span> rotated;                                              <span class="ch-comment">// Banner già trasformato</span>
+};
+</code></pre>
+<p>
+    <p>
+    Il costruttore <strong><code>BannerComponent()</code></strong> si occupa di estrarre una porzione dell'immagine binaria, applicare la rotazione di 90° e memorizzare il risultato nel membro privato <code>rotated</code>, garantendo così che la grafica sia pronta per il rendering.  
+    Il metodo <strong><code>paint()</code></strong>, eseguito sul Message Thread, disegna questa immagine già trasformata e la adatta alle dimensioni del componente, evitando il costo di ricalcoli ad ogni refresh.  
+    Il membro <code>rotated</code> conserva quindi la rappresentazione definitiva del banner, ottimizzando le prestazioni e mantenendo separata la fase di elaborazione da quella di disegno.
+</p>
+
+<p>
+
+<h3>Integrazione</h3>
+<p>
+    In <code>PluginEditor.cpp</code> il <code>BannerComponent</code> viene istanziato e integrato nella finestra principale tramite <code>addAndMakeVisible(bannerComponent)</code>, in modo che venga incluso nella gerarchia dei componenti e riceva automaticamente gli eventi di ridimensionamento e ridisegno.  
+    Nell'header di <code>BannerComponent</code> non è presente il macro <code>JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR</code>, ma, non avendo puntatori raw o risorse complesse, questa scelta non introduce rischi di memory leak. Tuttavia, aggiungere il macro può risultare utile in fase di sviluppo per rilevare copie involontarie del componente e semplificare l'individuazione di eventuali leak.  
+</p>
+
+
+
+
+</section>
+</body>
+</html>

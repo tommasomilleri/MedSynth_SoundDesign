@@ -165,7 +165,14 @@ void JuceSynthFrameworkAudioProcessor::prepareToPlay(double sampleRate,
 
     lowShelfFilter.reset();
 lowShelfFilter.prepare(spec);
-
+    /* equalizzatore che agisce principalmente sulle frequenze gravi. 
+    A differenza di un normale passa-basso, che attenua progressivamente tutto ciò che sta sopra una certa frequenza, 
+    il filtro a scaffale basso mantiene il guadagno costante (o aumentato) per tutte le frequenze al di sotto della frequenza di taglio e 
+    applica un diverso guadagno (tipicamente attenuazione) a quelle sopra la frequenza di taglio.
+    Di solito si usa per “rinforzare” o “pulire” le parti basse del suono prima o dopo la sintesi/effetti: 
+    ad esempio puoi abbassare leggermente i bassi di un riverbero a convoluzione se risultano troppo “ingombranti”, 
+    oppure enfatizzare le armoniche profonde del Karplus-Strong, dando al tuo liuto virtuale un carattere più caldo e corposo.
+    */
 
     
     stateVariableFilter.reset();
