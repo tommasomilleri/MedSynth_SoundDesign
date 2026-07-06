@@ -60,10 +60,6 @@ For a deep dive into the software architecture, custom DSP algorithms, and UI st
 
 **MedSynth: Joglar** è un sintetizzatore software personalizzato sviluppato in **C++** tramite il **Framework JUCE**. Unisce il fascino delle acustiche antiche con il moderno Digital Signal Processing (DSP), ed è progettato per emulare i paesaggi sonori unici degli strumenti medievali. È uno strumento ideale per compositori e sound designer che lavorano su media interattivi a tema storico, colonne sonore o audio per videogiochi.
 
-### 📸 Panoramica dell'Interfaccia
-*(Sostituisci il link sottostante con uno screenshot della tua UI)*
-![MedSynth Interface Placeholder](https://via.placeholder.com/800x400.png?text=Aggiungi+qui+lo+screenshot+di+Joglar)
-
 ### ✨ Funzionalità Principali
 * **Motori Sonori Medievali**: Configurazioni personalizzate mirate al realismo storico:
   * 🪕 **Liuto** (Configurato tramite `LuteConfig.h`)
