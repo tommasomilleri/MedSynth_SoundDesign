@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="assets/readme/banner.jpg" width="100%" alt="MedSynth · Joglar. Il giullare che suona corde fatte di numeri · The minstrel who plays strings made of numbers. Un liuto e una ribeca nella cornice dipinta dell'interfaccia, sopra una tastiera.">
+<img src="assets/banner.jpg" width="100%" alt="MedSynth · Joglar. Il giullare che suona corde fatte di numeri · The minstrel who plays strings made of numbers. Un liuto e una ribeca nella cornice dipinta dell'interfaccia, sopra una tastiera.">
 
 <p><b>Sintetizzatore a modelli fisici per strumenti medievali</b><br>
 <i>Physical-modelling synthesizer for medieval instruments</i></p>
@@ -18,12 +18,12 @@
 ![Status: work in progress](https://img.shields.io/badge/status-work_in_progress-b2801a?style=flat-square&labelColor=3b2a0d)
 ![License: not declared](https://img.shields.io/badge/license-not_declared-7d6c1d?style=flat-square&labelColor=3b2a0d)
 
-<img src="assets/readme/divider.svg" width="100%" alt="">
+<img src="assets/divider.svg" width="100%" alt="">
 
 <p><b>Scegli la tua lingua, viandante</b> · <i>Choose your tongue, traveller</i></p>
 
-<a href="#italiano"><img src="assets/readme/gate-it.svg" width="340" alt="Italiano: entra dalla porta italiana"></a>
-<a href="#english"><img src="assets/readme/gate-en.svg" width="340" alt="English: enter through the English gate"></a>
+<a href="#italiano"><img src="assets/gate-it.svg" width="340" alt="Italiano: entra dalla porta italiana"></a>
+<a href="#english"><img src="assets/gate-en.svg" width="340" alt="English: enter through the English gate"></a>
 
 </div>
 
@@ -34,7 +34,7 @@
 ## 🕯️ Prologo
 
 <p align="center">
-  <img src="assets/readme/prologue-it.svg" width="100%" alt="«Udite, udite, gente della piazza! Posate le ceste e fermate i carri: è giunto il joglar, e nella sua bisaccia non porta legno né budello, ma corde fatte di numeri.»">
+  <img src="assets/prologue-it.svg" width="100%" alt="«Udite, udite, gente della piazza! Posate le ceste e fermate i carri: è giunto il joglar, e nella sua bisaccia non porta legno né budello, ma corde fatte di numeri.»">
 </p>
 
 **Joglar** (in occitano antico *joglar*, dal latino *ioculator*: il giullare, il musico girovago di corti e fiere) è un sintetizzatore software scritto in **C++** con il framework **JUCE**. Non suona campioni registrati: **calcola** ogni nota, campione dopo campione, simulando una corda pizzicata che vibra dentro una cassa di legno. Nella bisaccia ci sono oggi due strumenti, il **liuto** e la **ribeca**.
@@ -44,7 +44,7 @@ Nato come progetto universitario di audio development e sound design all'Univers
 > [!NOTE]
 > **Stato del progetto: in cantiere.** Il motore a corda pizzicata, le risonanze della cassa, il riverbero e l'interfaccia funzionano. Alcune parti (somma delle voci, volume senza click, chorus, oscillatori, pitch bend) sono scritte ma non ancora collegate, oppure vanno corrette: il quadro completo, con i rimedi, è nel [Cantiere](#-il-cantiere-della-cattedrale).
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🧭 Scegli il tuo sentiero
 
@@ -58,7 +58,7 @@ Nato come progetto universitario di audio development e sound design all'Univers
 | 🗺️ **Cartografo**: vuoi orientarti nel codice | [La mappa del feudo](#-la-mappa-del-feudo) |
 | 🛡️ **Cavaliere**: vuoi dare una mano | [Il cantiere](#-il-cantiere-della-cattedrale) · [Unisciti alla compagnia](#-unisciti-alla-compagnia) |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📋 Scheda tecnica
 
@@ -76,7 +76,7 @@ Nato come progetto universitario di audio development e sound design all'Univers
 | 🪟 **Eseguibile** | [`Joglar.exe`](https://github.com/tommasomilleri/MedSynth_SoundDesign/raw/main/Joglar.exe) · Standalone per Windows x64 · circa 17 MB · compilato con JUCE 8.0.7 |
 | 📚 **Documentazione** | [`Documentazione.html`](./Documentazione.html), il manuale tecnico in italiano (scaricalo e aprilo nel browser) |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🎶 Suonare in tre mosse
 
@@ -104,7 +104,7 @@ Quattro piccole imprese per conoscere Joglar con l'orecchio.
 | **III · L'accordo** | Premi tre tasti insieme, con una tastiera MIDI o con quella del computer. | Dovresti sentire tre note. Se ne senti una sola, hai incontrato l'Idra delle Voci ([Bestiario](#-il-bestiario-dei-difetti-noti)). |
 | **IV · Il tuo legno** | Crea una cartella `IR` accanto all'eseguibile, mettici una breve risposta all'impulso chiamata `lute_ir.wav` e riavvia. | La cassa prende il colore della tua IR: ne vengono usati i primi 2048 campioni, circa 46 ms. |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🪕 Gli strumenti nella bisaccia
 
@@ -114,8 +114,8 @@ Quattro piccole imprese per conoscere Joglar con l'orecchio.
     <th align="center">🎻 Ribeca</th>
   </tr>
   <tr>
-    <td align="center"><img src="assets/readme/lute.jpg" width="240" alt="Il liuto nella cornice dipinta dell'interfaccia di Joglar"></td>
-    <td align="center"><img src="assets/readme/rebec.jpg" width="240" alt="La ribeca nella cornice dipinta dell'interfaccia di Joglar"></td>
+    <td align="center"><img src="assets/lute.jpg" width="240" alt="Il liuto nella cornice dipinta dell'interfaccia di Joglar"></td>
+    <td align="center"><img src="assets/rebec.jpg" width="240" alt="La ribeca nella cornice dipinta dell'interfaccia di Joglar"></td>
   </tr>
   <tr>
     <td valign="top">Discendente dell'<i>ʿūd</i> arabo, giunto in Europa attraverso la Spagna e la Sicilia. Nel Medioevo si suonava con un plettro ricavato da una penna: un suono intimo, rotondo, che si spegne in fretta.<br><br><code>LuteConfig.h</code></td>
@@ -154,7 +154,7 @@ La voce legge attack, decay e release come **millisecondi** (li divide per 1000)
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🪵 La bottega del liutaio
 
@@ -272,7 +272,7 @@ sequenceDiagram
     Note over V: release dell'inviluppo,<br/>poi la voce torna libera
 ```
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🏰 L'architettura del castello
 
@@ -327,7 +327,7 @@ classDiagram
 - **Voci e polifonia.** Un `juce::Synthesiser` gestisce 5 `SynthVoice` con *note stealing*: all'arrivo di una sesta nota viene riassegnata una voce già in uso.
 - **L'editor.** L'interfaccia è volutamente essenziale: selettore dello strumento, immagine, tastiera. Lo stile (`CarnivalLookAndFeel`) usa i colori della pergamena.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🔧 Il pannello dei parametri
 
@@ -367,7 +367,7 @@ Inviluppo, forme d'onda e pitch bend vengono oggi dalla configurazione dello str
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🔨 La fucina: compilare dal sorgente
 
@@ -391,7 +391,7 @@ git clone https://github.com/tommasomilleri/MedSynth_SoundDesign.git
 > [!NOTE]
 > Nel file `.jucer` c'è anche un exporter **Visual Studio 2017**, ma Projucer lo ha rimosso a partire da JUCE 8.0.1: usa Visual Studio 2022. Con JUCE 8 i costruttori di `juce::Font` usati nell'interfaccia sono deprecati e producono avvisi, non errori. Il percorso di inclusione `Source/Maximilian/libs` indicato nel progetto non esiste e si può togliere.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📜 Forgiare un nuovo strumento
 
@@ -444,7 +444,7 @@ imagesMap[InstrumentType::Psaltery] = juce::ImageFileFormat::loadFrom(
 > [!NOTE]
 > Oggi la corda di Karplus-Strong è la stessa per tutti gli strumenti: ciò che li distingue è l'inviluppo, il filtro e il guadagno. Le forme d'onda dichiarate nelle configurazioni non vengono ancora usate dalla voce.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🌍 La mappa del feudo
 
@@ -472,7 +472,7 @@ MedSynth_SoundDesign/
     └── *.png  *.jpg            sfondi e ritratti degli strumenti
 ```
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🧱 Il cantiere della cattedrale
 
@@ -531,7 +531,7 @@ Ogni creatura ha il suo rimedio: sono ottimi **primi incarichi** per chi vuole c
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## ❓ Domande dal viandante
 
@@ -607,7 +607,7 @@ Il repository non dichiara ancora una licenza: finché non ne verrà aggiunta un
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📚 Il glossario e la biblioteca
 
@@ -629,7 +629,7 @@ Il repository non dichiara ancora una licenza: finché non ne verrà aggiunta un
 - [JUCE](https://juce.com/): documentazione e tutorial del framework.
 - [`Documentazione.html`](./Documentazione.html): l'analisi file per file di questo progetto.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🤝 Unisciti alla compagnia
 
@@ -639,17 +639,17 @@ Il repository non dichiara ancora una licenza: finché non ne verrà aggiunta un
 
 Non sai da dove cominciare? Scegli una creatura del [Bestiario](#-il-bestiario-dei-difetti-noti) o aggiungi un nuovo strumento con la [guida](#-forgiare-un-nuovo-strumento).
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## ⚖️ Licenza e crediti
 
 - **Licenza:** il repository non dichiara ancora una licenza. Finché non ne verrà aggiunta una, i diritti restano riservati all'autore.
 - **JUCE:** JUCE 8 è distribuito con doppia licenza, [AGPLv3 o commerciale](https://github.com/juce-framework/JUCE/blob/master/LICENSE.md): chi distribuisce una build deve rispettarne una delle due.
-- **Immagini:** sfondi e ritratti degli strumenti sono in `Source/`; la loro provenienza non è ancora documentata. Le decorazioni di questa pagina (`assets/readme/`) sono ricavate dalla cornice dell'interfaccia e da quei ritratti; i testi sono composti in Cinzel Decorative, Cinzel ed EB Garamond (SIL Open Font License) e convertiti in tracciati.
+- **Immagini:** sfondi e ritratti degli strumenti sono in `Source/`; la loro provenienza non è ancora documentata. Le decorazioni di questa pagina (`assets/`) sono ricavate dalla cornice dell'interfaccia e da quei ritratti; i testi sono composti in Cinzel Decorative, Cinzel ed EB Garamond (SIL Open Font License) e convertiti in tracciati.
 - **Autore:** **Tommaso Milleri** · progetto di audio development e sound design, Università Politecnica delle Marche (UNIVPM).
 
 <p align="center">
-  <img src="assets/readme/epilogue-it.svg" width="100%" alt="«Qui finisce il canto, ma non la strada. Se la musica vi fu gradita, lasciate una stella al joglar, ché di stelle campa chi va per il mondo.» ⭐">
+  <img src="assets/epilogue-it.svg" width="100%" alt="«Qui finisce il canto, ma non la strada. Se la musica vi fu gradita, lasciate una stella al joglar, ché di stelle campa chi va per il mondo.» ⭐">
 </p>
 
 <div align="center">
@@ -658,7 +658,7 @@ Non sai da dove cominciare? Scegli una creatura del [Bestiario](#-il-bestiario-d
 
 </div>
 
-<p align="center"><img src="assets/readme/divider.svg" width="100%" alt=""></p>
+<p align="center"><img src="assets/divider.svg" width="100%" alt=""></p>
 
 <a id="english"></a>
 
@@ -667,7 +667,7 @@ Non sai da dove cominciare? Scegli una creatura del [Bestiario](#-il-bestiario-d
 ## 🕯️ Prologue
 
 <p align="center">
-  <img src="assets/readme/prologue-en.svg" width="100%" alt="“Hear ye, hear ye, good folk of the market square! Set down your baskets and halt your carts: the joglar has come, and in his satchel he carries neither wood nor gut, but strings made of numbers.”">
+  <img src="assets/prologue-en.svg" width="100%" alt="“Hear ye, hear ye, good folk of the market square! Set down your baskets and halt your carts: the joglar has come, and in his satchel he carries neither wood nor gut, but strings made of numbers.”">
 </p>
 
 **Joglar** (Old Occitan *joglar*, from Latin *ioculator*: the jongleur, the wandering musician of courts and fairs) is a software synthesizer written in **C++** with the **JUCE** framework. It plays no recorded samples: it **computes** every note, sample by sample, by simulating a plucked string vibrating inside a wooden body. The satchel currently holds two instruments, the **lute** and the **rebec**.
@@ -677,7 +677,7 @@ It began as a university audio development and sound design project at the Unive
 > [!NOTE]
 > **Project status: work in progress.** The plucked-string engine, the body resonances, the reverb and the interface all work. A few parts (voice summing, click-free volume, chorus, oscillators, pitch bend) are written but not yet wired in, or still need fixing: the full picture, with remedies, is in the [Building Site](#-the-cathedral-building-site).
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🧭 Choose your path
 
@@ -691,7 +691,7 @@ It began as a university audio development and sound design project at the Unive
 | 🗺️ **Cartographer**: you want to find your way in the code | [The map of the realm](#-the-map-of-the-realm) |
 | 🛡️ **Knight**: you want to lend a hand | [The building site](#-the-cathedral-building-site) · [Join the company](#-join-the-company) |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📋 Fact sheet
 
@@ -709,7 +709,7 @@ It began as a university audio development and sound design project at the Unive
 | 🪟 **Executable** | [`Joglar.exe`](https://github.com/tommasomilleri/MedSynth_SoundDesign/raw/main/Joglar.exe) · Standalone for Windows x64 · about 17 MB · built with JUCE 8.0.7 |
 | 📚 **Documentation** | [`Documentazione.html`](./Documentazione.html), the technical manual, in Italian (download it and open it in a browser) |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🎶 Play in three moves
 
@@ -737,7 +737,7 @@ Four small deeds to get to know Joglar by ear.
 | **III · The chord** | Press three keys together, on a MIDI keyboard or on your computer keyboard. | You should hear three notes. If you hear only one, you have met the Hydra of Voices ([Bestiary](#-the-bestiary-of-known-defects)). |
 | **IV · Your own wood** | Create an `IR` folder next to the executable, put a short impulse response named `lute_ir.wav` in it and restart. | The body takes on the colour of your IR: only its first 2048 samples, about 46 ms, are used. |
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🪕 The instruments in the satchel
 
@@ -747,8 +747,8 @@ Four small deeds to get to know Joglar by ear.
     <th align="center">🎻 Rebec</th>
   </tr>
   <tr>
-    <td align="center"><img src="assets/readme/lute.jpg" width="240" alt="The lute in the painted frame of Joglar's interface"></td>
-    <td align="center"><img src="assets/readme/rebec.jpg" width="240" alt="The rebec in the painted frame of Joglar's interface"></td>
+    <td align="center"><img src="assets/lute.jpg" width="240" alt="The lute in the painted frame of Joglar's interface"></td>
+    <td align="center"><img src="assets/rebec.jpg" width="240" alt="The rebec in the painted frame of Joglar's interface"></td>
   </tr>
   <tr>
     <td valign="top">A descendant of the Arabic <i>ʿūd</i>, it reached Europe through Spain and Sicily. In the Middle Ages it was played with a quill plectrum: an intimate, rounded sound that fades quickly.<br><br><code>LuteConfig.h</code></td>
@@ -787,7 +787,7 @@ The voice reads attack, decay and release as **milliseconds** (it divides them b
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🪵 The luthier's workshop
 
@@ -905,7 +905,7 @@ sequenceDiagram
     Note over V: envelope release,<br/>then the voice is free again
 ```
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🏰 The castle's architecture
 
@@ -960,7 +960,7 @@ classDiagram
 - **Voices and polyphony.** A `juce::Synthesiser` manages 5 `SynthVoice` objects with *note stealing*: when a sixth note arrives, a voice already in use is reassigned.
 - **The editor.** The interface is deliberately essential: instrument selector, picture, keyboard. The style (`CarnivalLookAndFeel`) uses parchment colours.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🔧 The parameter panel
 
@@ -1000,7 +1000,7 @@ Envelope, waveforms and pitch bend currently come from the instrument configurat
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🔨 The forge: building from source
 
@@ -1024,7 +1024,7 @@ git clone https://github.com/tommasomilleri/MedSynth_SoundDesign.git
 > [!NOTE]
 > The `.jucer` file also contains a **Visual Studio 2017** exporter, but Projucer dropped it in JUCE 8.0.1: use Visual Studio 2022. With JUCE 8, the `juce::Font` constructors used in the interface are deprecated and produce warnings, not errors. The `Source/Maximilian/libs` header path listed in the project does not exist and can be removed.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📜 Forging a new instrument
 
@@ -1077,7 +1077,7 @@ imagesMap[InstrumentType::Psaltery] = juce::ImageFileFormat::loadFrom(
 > [!NOTE]
 > Today the Karplus-Strong string is the same for every instrument: what sets them apart is the envelope, the filter and the gain. The waveforms declared in the configurations are not yet used by the voice.
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🌍 The map of the realm
 
@@ -1105,7 +1105,7 @@ MedSynth_SoundDesign/
     └── *.png  *.jpg            backgrounds and instrument portraits
 ```
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🧱 The cathedral building site
 
@@ -1164,7 +1164,7 @@ Every creature comes with its remedy: they make excellent **first assignments** 
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## ❓ Questions from the traveller
 
@@ -1240,7 +1240,7 @@ The repository does not declare a licence yet: until one is added, all rights re
 
 </details>
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 📚 The glossary and the library
 
@@ -1262,7 +1262,7 @@ The repository does not declare a licence yet: until one is added, all rights re
 - [JUCE](https://juce.com/): documentation and tutorials for the framework.
 - [`Documentazione.html`](./Documentazione.html): a file-by-file analysis of this project (in Italian).
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## 🤝 Join the company
 
@@ -1272,7 +1272,7 @@ The repository does not declare a licence yet: until one is added, all rights re
 
 Not sure where to begin? Pick a creature from the [Bestiary](#-the-bestiary-of-known-defects) or add a new instrument with the [guide](#-forging-a-new-instrument).
 
-<p align="center"><img src="assets/readme/fleuron.svg" width="240" alt=""></p>
+<p align="center"><img src="assets/fleuron.svg" width="240" alt=""></p>
 
 ## ⚖️ Licence and credits
 
@@ -1282,7 +1282,7 @@ Not sure where to begin? Pick a creature from the [Bestiary](#-the-bestiary-of-k
 - **Author:** **Tommaso Milleri** · audio development and sound design project, Università Politecnica delle Marche (UNIVPM).
 
 <p align="center">
-  <img src="assets/readme/epilogue-en.svg" width="100%" alt="“Here ends the song, but not the road. If the music pleased you, leave the joglar a star, for on stars lives he who wanders the world.” ⭐">
+  <img src="assets/epilogue-en.svg" width="100%" alt="“Here ends the song, but not the road. If the music pleased you, leave the joglar a star, for on stars lives he who wanders the world.” ⭐">
 </p>
 
 <div align="center">
